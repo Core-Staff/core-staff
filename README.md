@@ -88,13 +88,35 @@ pnpm dev
 ```
 core-staff/
 ├── src/
-│   ├── app/              # Next.js app router pages
-│   ├── components/       # Reusable React components
-│   ├── lib/             # Utility functions and helpers
-│   └── ...
-├── public/              # Static assets
-├── components.json      # shadcn/ui configuration
-└── ...
+│   ├── app/
+│   │   ├── (auth)/              # Authentication routes
+│   │   │   ├── login/           # Login page
+│   │   │   └── register/        # Registration page
+│   │   ├── (dashboard)/         # Dashboard routes (protected)
+│   │   │   ├── employees/       # Employee management
+│   │   │   ├── attendance/      # Time & attendance
+│   │   │   ├── performance/     # Performance reviews
+│   │   │   └── reports/         # Analytics & reports
+│   │   ├── api/                 # API routes
+│   │   ├── globals.css          # Global styles
+│   │   ├── layout.tsx           # Root layout
+│   │   └── page.tsx             # Home page
+│   ├── components/
+│   │   ├── ui/                  # shadcn/ui components
+│   │   ├── layout/              # Layout components
+│   │   ├── employees/           # Employee components
+│   │   ├── attendance/          # Attendance components
+│   │   └── performance/         # Performance components
+│   ├── lib/
+│   │   ├── actions/             # Server actions
+│   │   ├── hooks/               # Custom React hooks
+│   │   ├── validations/         # Zod schemas
+│   │   └── utils.ts             # Utility functions
+│   ├── types/                   # TypeScript types
+│   ├── config/                  # App configuration
+│   └── constants/               # Constants & enums
+├── public/                      # Static assets
+└── components.json              # shadcn/ui config
 ```
 
 ## 🤝 Contributing
