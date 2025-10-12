@@ -8,12 +8,26 @@ export default function Home() {
         <p className="mb-8 text-muted-foreground">
           A modern HR management platform
         </p>
-        <Link
-          href="/reports"
-          className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-        >
-          View Analytics Dashboard
-        </Link>
+        <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <Link
+            href="/login"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/register"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+          >
+            Create Account
+          </Link>
+          <Link
+            href="/reports"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+          >
+            View Analytics
+          </Link>
+        </div>
       </main>
     </div>
   );
