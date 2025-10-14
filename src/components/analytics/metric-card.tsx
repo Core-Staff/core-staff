@@ -1,38 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ArrowDown,
-  ArrowUp,
-  Users,
-  UserCheck,
-  TrendingUp,
-  FileText,
-  LucideIcon,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, Users, UserCheck, TrendingUp, FileText, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type MetricIcon = "users" | "user-check" | "trending-up" | "file-text";
 
 interface MetricCardProps {
   title: string;
   value: string | number;
   change: number;
   changeType: "increase" | "decrease";
-  icon: string;
+  icon: MetricIcon;
 }
 
-const iconMap: Record<string, LucideIcon> = {
+const iconMap: Record<MetricIcon, LucideIcon> = {
   users: Users,
   "user-check": UserCheck,
   "trending-up": TrendingUp,
   "file-text": FileText,
 };
 
-export function MetricCard({
-  title,
-  value,
-  change,
-  changeType,
-  icon,
-}: MetricCardProps) {
-  const Icon = iconMap[icon] || Users;
+export function MetricCard({ title, value, change, changeType, icon }: MetricCardProps) {
+  const Icon = iconMap[icon] ?? Users;
   const isPositive = changeType === "increase";
   const ChangeIcon = isPositive ? ArrowUp : ArrowDown;
 
