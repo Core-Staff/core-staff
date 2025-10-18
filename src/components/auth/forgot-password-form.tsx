@@ -17,7 +17,8 @@ export function ForgotPasswordForm() {
 
       {/* Description */}
       <p className="text-sm text-muted-foreground">
-        Enter your email address and we&apos;ll send you a link to reset your password.
+        Enter your email address and we&apos;ll send you a link to reset your
+        password.
       </p>
 
       {/* Email Field */}
@@ -37,7 +38,10 @@ export function ForgotPasswordForm() {
       {/* Additional Help */}
       <p className="text-center text-sm text-muted-foreground">
         Need help?{" "}
-        <Link href="/support" className="font-medium text-primary hover:underline">
+        <Link
+          href="/support"
+          className="font-medium text-primary hover:underline"
+        >
           Contact support
         </Link>
       </p>

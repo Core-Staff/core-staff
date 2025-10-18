@@ -5,6 +5,7 @@
 Core Staff is a full-featured human resources management system designed to streamline HR operations, enhance employee experience, and empower organizations to manage their workforce effectively. Built with Next.js and modern web technologies, Core Staff provides an intuitive interface for handling all aspects of human resource management.
 
 ## ✨ Features
+
 ### 👥 Employee Management
 
 - **Comprehensive Employee Profiles** - Manage detailed employee information, documentation, and records

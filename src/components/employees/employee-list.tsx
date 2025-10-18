@@ -76,7 +76,9 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar>
-                      <AvatarFallback>{getInitials(employee.name)}</AvatarFallback>
+                      <AvatarFallback>
+                        {getInitials(employee.name)}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="font-medium">{employee.name}</div>
@@ -91,7 +93,8 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                 <TableCell>{employee.position}</TableCell>
                 <TableCell>
                   <Badge variant={getStatusVariant(employee.status)}>
-                    {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
+                    {employee.status.charAt(0).toUpperCase() +
+                      employee.status.slice(1)}
                   </Badge>
                 </TableCell>
                 <TableCell>{formatDate(employee.joinDate)}</TableCell>

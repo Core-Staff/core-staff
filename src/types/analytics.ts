@@ -1,9 +1,11 @@
+export type MetricIcon = "users" | "user-check" | "trending-up" | "file-text";
+
 export interface MetricCard {
   title: string;
   value: string | number;
   change: number;
   changeType: "increase" | "decrease";
-  icon: string;
+  icon: MetricIcon;
 }
 
 export interface DepartmentData {

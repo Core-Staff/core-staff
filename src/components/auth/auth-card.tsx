@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Building2 } from "lucide-react";
 
 interface AuthCardProps {
@@ -17,7 +23,9 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
             <Building2 className="h-8 w-8 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold">Core Staff</h1>
-          <p className="text-sm text-muted-foreground">HR Management Platform</p>
+          <p className="text-sm text-muted-foreground">
+            HR Management Platform
+          </p>
         </div>
 
         {/* Auth Form Card */}

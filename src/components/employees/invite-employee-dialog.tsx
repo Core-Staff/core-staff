@@ -58,7 +58,7 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
                 <Input id="lastName" placeholder="Doe" required />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -68,7 +68,7 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="department">Department</Label>
               <Select required>
@@ -85,16 +85,12 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="position">Position</Label>
-              <Input
-                id="position"
-                placeholder="Software Engineer"
-                required
-              />
+              <Input id="position" placeholder="Software Engineer" required />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="message">Personal Message (Optional)</Label>
               <Textarea
@@ -104,9 +100,13 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
               />
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit">Send Invitation</Button>

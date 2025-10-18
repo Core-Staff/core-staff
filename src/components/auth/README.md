@@ -7,14 +7,18 @@ A comprehensive set of modular authentication UI components built with shadcn/ui
 ### 🔐 Core Components
 
 #### AuthCard
+
 Main wrapper component for authentication pages with branding and layout.
+
 - **Props**: title, description, children
 - **Features**: Logo display, centered layout, responsive design
 - **Location**: `auth-card.tsx`
 
 #### LoginForm
+
 Complete login form with email/password and social authentication.
-- **Features**: 
+
+- **Features**:
   - Email and password fields
   - Social login (Google, GitHub)
   - Remember me checkbox
@@ -23,7 +27,9 @@ Complete login form with email/password and social authentication.
 - **Location**: `login-form.tsx`
 
 #### RegisterForm
+
 Registration form for new user account creation.
+
 - **Features**:
   - First and last name fields
   - Work email input
@@ -35,29 +41,37 @@ Registration form for new user account creation.
 - **Location**: `register-form.tsx`
 
 #### FormField
+
 Reusable form input field component.
+
 - **Props**: id, label, type, placeholder, required
 - **Features**: Label with required indicator, styled input
 - **Location**: `form-field.tsx`
 
 #### SocialAuthButton
+
 Button for social authentication providers.
+
 - **Props**: provider, icon
 - **Features**: Icon support, consistent styling
 - **Location**: `social-auth-button.tsx`
 
 #### AuthSeparator
+
 Visual separator with "Or continue with" text.
+
 - **Features**: Centered text, horizontal line
 - **Location**: `auth-separator.tsx`
 
 ## Pages
 
 ### Login Page
+
 **Route**: `/login`
 **File**: `src/app/(auth)/login/page.tsx`
 
 Features:
+
 - Email/password login
 - Social authentication (Google, GitHub)
 - Remember me option
@@ -65,10 +79,12 @@ Features:
 - Sign up redirect
 
 ### Register Page
+
 **Route**: `/register`
 **File**: `src/app/(auth)/register/page.tsx`
 
 Features:
+
 - User information collection
 - Company details
 - Password creation
@@ -83,10 +99,7 @@ import { AuthCard, LoginForm } from "@/components/auth";
 
 export default function LoginPage() {
   return (
-    <AuthCard
-      title="Welcome back"
-      description="Sign in to your account"
-    >
+    <AuthCard title="Welcome back" description="Sign in to your account">
       <LoginForm />
     </AuthCard>
   );
@@ -96,6 +109,7 @@ export default function LoginPage() {
 ## Styling
 
 All components use:
+
 - **shadcn/ui** for base components (Button, Input, Card, etc.)
 - **Tailwind CSS** for styling
 - **Lucide React** for icons
@@ -115,6 +129,7 @@ All components use:
 ## Layout
 
 The auth pages use a route group `(auth)` with:
+
 - Centered card layout
 - Gradient background
 - Responsive max-width container

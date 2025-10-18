@@ -7,10 +7,10 @@ export default function EmployeesPage() {
   return (
     <div className="flex min-h-screen flex-col gap-8 p-8">
       <EmployeeHeader />
-      
+
       {/* Employee Stats */}
       <EmployeeStats stats={mockEmployeeStats} />
-      
+
       {/* Employee List */}
       <EmployeeList employees={mockEmployees} />
     </div>

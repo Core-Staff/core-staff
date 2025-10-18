@@ -31,12 +31,7 @@ export function RegisterForm() {
           placeholder="John"
           required
         />
-        <FormField
-          id="lastName"
-          label="Last Name"
-          placeholder="Doe"
-          required
-        />
+        <FormField id="lastName" label="Last Name" placeholder="Doe" required />
       </div>
 
       {/* Email Field */}
@@ -100,7 +95,10 @@ export function RegisterForm() {
       {/* Sign In Link */}
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-primary hover:underline">
+        <Link
+          href="/login"
+          className="font-medium text-primary hover:underline"
+        >
           Sign in
         </Link>
       </p>
