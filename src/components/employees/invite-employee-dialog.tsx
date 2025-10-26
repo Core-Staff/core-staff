@@ -30,8 +30,7 @@ interface InviteEmployeeDialogProps {
 export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState<string>("");
   const [position, setPosition] = useState("");
@@ -45,20 +44,12 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
       const res = await fetch("/api/employees", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          department,
-          position,
-          message,
-        }),
+        body: JSON.stringify({ name, email, department, position, message }),
       });
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || "Failed to invite");
       setOpen(false);
-      setFirstName("");
-      setLastName("");
+      setName("");
       setEmail("");
       setDepartment("");
       setPosition("");
@@ -83,27 +74,15 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  placeholder="John"
-                  required
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  placeholder="Doe"
-                  required
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                placeholder="John Doe"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
 
             <div className="space-y-2">
@@ -121,7 +100,10 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
             <div className="space-y-2">
               <Label htmlFor="department">Department</Label>
               <Select required value={department} onValueChange={setDepartment}>
-                <SelectTrigger aria-label="Select department" data-testid="dept-trigger">
+                <SelectTrigger
+                  aria-label="Select department"
+                  data-testid="dept-trigger"
+                >
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>

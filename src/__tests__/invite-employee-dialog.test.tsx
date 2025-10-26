@@ -68,11 +68,8 @@ describe("InviteEmployeeDialog", () => {
 
     fireEvent.click(screen.getByText("Invite Employee"));
 
-    fireEvent.change(screen.getByLabelText("First Name"), {
-      target: { value: "John" },
-    });
-    fireEvent.change(screen.getByLabelText("Last Name"), {
-      target: { value: "Doe" },
+    fireEvent.change(screen.getByLabelText("Full Name"), {
+      target: { value: "John Doe" },
     });
     fireEvent.change(screen.getByLabelText("Email Address"), {
       target: { value: "john@corp.com" },
@@ -92,8 +89,7 @@ describe("InviteEmployeeDialog", () => {
     expect(opts.method).toBe("POST");
     const payload = JSON.parse(opts.body);
     expect(payload).toMatchObject({
-      firstName: "John",
-      lastName: "Doe",
+      name: "John Doe",
       email: "john@corp.com",
       department: "Engineering",
       position: "Engineer",
