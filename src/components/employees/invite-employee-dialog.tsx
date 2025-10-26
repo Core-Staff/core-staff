@@ -121,7 +121,7 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
             <div className="space-y-2">
               <Label htmlFor="department">Department</Label>
               <Select required value={department} onValueChange={setDepartment}>
-                <SelectTrigger>
+                <SelectTrigger aria-label="Select department" data-testid="dept-trigger">
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>
