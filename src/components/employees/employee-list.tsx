@@ -67,6 +67,16 @@ export function EmployeeList({ employees }: EmployeeListProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {employees.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground py-6"
+                >
+                  No employees found
+                </TableCell>
+              </TableRow>
+            )}
             {employees.map((employee) => (
               <TableRow key={employee.id}>
                 <TableCell>
