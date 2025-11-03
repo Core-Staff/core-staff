@@ -11,13 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Employee } from "@/types/employee";
-import { MoreHorizontal, Mail, Phone, MapPin } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Pencil, Trash, Mail } from "lucide-react";
+import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
+import { DeleteEmployeeDialog } from "@/components/employees/delete-employee-dialog";
 
 interface EmployeeListProps {
   employees: Employee[];
@@ -99,27 +95,22 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                 </TableCell>
                 <TableCell>{formatDate(employee.joinDate)}</TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                  <div className="inline-flex gap-2" aria-label="Actions">
+                    <EditEmployeeDialog employee={employee}>
                       <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
+                        <Pencil className="mr-2 h-4 w-4" /> Edit
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Send Email
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Phone className="mr-2 h-4 w-4" />
-                        Call
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <MapPin className="mr-2 h-4 w-4" />
-                        View Profile
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    </EditEmployeeDialog>
+                    <DeleteEmployeeDialog employee={employee}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive"
+                      >
+                        <Trash className="mr-2 h-4 w-4" /> Delete
+                      </Button>
+                    </DeleteEmployeeDialog>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
