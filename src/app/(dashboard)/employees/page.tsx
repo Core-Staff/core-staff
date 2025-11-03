@@ -7,26 +7,42 @@ import type {
 } from "@/types/employee";
 import { listEmployees } from "@/lib/db/employees";
 
-export default async function EmployeesPage() {
+export default async function EmployeesPage({
+  searchParams,
+}: {
+  searchParams?: { q?: string; dept?: string };
+}) {
   const employees: Employee[] = await listEmployees();
+  const q = (searchParams?.q ?? "").trim().toLowerCase();
+  const dept = (searchParams?.dept ?? "").trim().toLowerCase();
+  const filtered = employees.filter((e) => {
+    const matchesQuery = q
+      ? [e.name, e.email, e.position, e.department]
+          .filter(Boolean)
+          .some((v) => v.toLowerCase().includes(q))
+      : true;
+    const matchesDept =
+      dept && dept !== "all" ? e.department.toLowerCase() === dept : true;
+    return matchesQuery && matchesDept;
+  });
   const now = new Date();
   const stats: EmployeeStatsType = {
-    totalEmployees: employees.length,
-    activeEmployees: employees.filter((e) => e.status === "active").length,
-    newThisMonth: employees.filter((e) => {
+    totalEmployees: filtered.length,
+    activeEmployees: filtered.filter((e) => e.status === "active").length,
+    newThisMonth: filtered.filter((e) => {
       const d = new Date(e.joinDate);
       return (
         d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
       );
     }).length,
-    pendingInvites: employees.filter((e) => e.status === "pending").length,
+    pendingInvites: filtered.filter((e) => e.status === "pending").length,
   };
 
   return (
     <div className="flex min-h-screen flex-col gap-8 p-8">
       <EmployeeHeader />
       <EmployeeStats stats={stats} />
-      <EmployeeList employees={employees} />
+      <EmployeeList employees={filtered} />
     </div>
   );
 }
