@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { createEmployee, listEmployees } from "@/lib/db/employees";
 
-export async function GET() {
+export async function GET(request?: Request) {
   try {
-    const data = await listEmployees();
+    const url = request ? new URL(request.url) : null;
+    const q = url ? (url.searchParams.get("q") ?? undefined) : undefined;
+    const dept = url ? (url.searchParams.get("dept") ?? undefined) : undefined;
+    const status = url
+      ? (url.searchParams.get("status") as "active" | "inactive" | null)
+      : null;
+    const data = await listEmployees({ q, dept, status: status ?? undefined });
     return NextResponse.json({ ok: true, data });
   } catch (e) {
     return NextResponse.json(

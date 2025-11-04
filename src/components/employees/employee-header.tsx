@@ -80,12 +80,12 @@ export function EmployeeHeader() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Departments</SelectItem>
-            <SelectItem value="engineering">Engineering</SelectItem>
-            <SelectItem value="sales">Sales</SelectItem>
-            <SelectItem value="marketing">Marketing</SelectItem>
-            <SelectItem value="hr">HR</SelectItem>
-            <SelectItem value="finance">Finance</SelectItem>
-            <SelectItem value="operations">Operations</SelectItem>
+            <SelectItem value="Engineering">Engineering</SelectItem>
+            <SelectItem value="Sales">Sales</SelectItem>
+            <SelectItem value="Marketing">Marketing</SelectItem>
+            <SelectItem value="HR">HR</SelectItem>
+            <SelectItem value="Finance">Finance</SelectItem>
+            <SelectItem value="Operations">Operations</SelectItem>
           </SelectContent>
         </Select>
 
