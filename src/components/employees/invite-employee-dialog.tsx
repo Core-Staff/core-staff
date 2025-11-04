@@ -36,11 +36,33 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
   const [position, setPosition] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [toast, setToast] = useState<string>("");
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 4000);
+  };
+
+  const validate = () => {
+    const next: Record<string, string> = {};
+    if (!name.trim()) next.name = "Name is required";
+    const emailOk = /.+@.+\..+/.test(email.trim());
+    if (!emailOk) next.email = "Valid email is required";
+    if (!department.trim()) next.department = "Department is required";
+    if (!position.trim()) next.position = "Position is required";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      if (!validate()) {
+        showToast("Please fix validation errors");
+        return;
+      }
       const res = await fetch("/api/employees", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,7 +78,7 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
       setMessage("");
       router.refresh();
     } catch (err) {
-      console.error(err);
+      showToast("Failed to invite employee");
     } finally {
       setSubmitting(false);
     }
@@ -66,6 +88,11 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
+        {toast && (
+          <div className="fixed right-4 top-4 z-50 rounded-md bg-red-600 px-3 py-2 text-sm text-white shadow-md">
+            {toast}
+          </div>
+        )}
         <DialogHeader>
           <DialogTitle>Invite New Employee</DialogTitle>
           <DialogDescription>
@@ -83,6 +110,9 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
+              {errors.name && (
+                <div className="text-red-600 text-xs">{errors.name}</div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -95,6 +125,9 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {errors.email && (
+                <div className="text-red-600 text-xs">{errors.email}</div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -115,6 +148,9 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
                   <SelectItem value="Operations">Operations</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.department && (
+                <div className="text-red-600 text-xs">{errors.department}</div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -126,6 +162,9 @@ export function InviteEmployeeDialog({ children }: InviteEmployeeDialogProps) {
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
               />
+              {errors.position && (
+                <div className="text-red-600 text-xs">{errors.position}</div>
+              )}
             </div>
 
             <div className="space-y-2">
