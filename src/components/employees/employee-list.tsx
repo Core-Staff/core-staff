@@ -1,3 +1,4 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -14,12 +15,15 @@ import { Employee } from "@/types/employee";
 import { Pencil, Trash, Mail } from "lucide-react";
 import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
 import { DeleteEmployeeDialog } from "@/components/employees/delete-employee-dialog";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface EmployeeListProps {
   employees: Employee[];
 }
 
 export function EmployeeList({ employees }: EmployeeListProps) {
+  const router = useRouter();
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -37,6 +41,37 @@ export function EmployeeList({ employees }: EmployeeListProps) {
       default:
         return "outline";
     }
+  };
+
+  const ToggleStatusButton = ({
+    id,
+    status,
+  }: {
+    id: string;
+    status: string;
+  }) => {
+    const [loading, setLoading] = useState(false);
+    const next = status === "active" ? "inactive" : "active";
+    const onClick = async () => {
+      if (loading) return;
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/employees/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: next }),
+        });
+        await res.json();
+        router.refresh();
+      } finally {
+        setLoading(false);
+      }
+    };
+    return (
+      <Button variant="ghost" size="sm" onClick={onClick} disabled={loading}>
+        {next === "active" ? "Activate" : "Deactivate"}
+      </Button>
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -104,6 +139,10 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                 <TableCell>{formatDate(employee.joinDate)}</TableCell>
                 <TableCell className="text-right">
                   <div className="inline-flex gap-2" aria-label="Actions">
+                    <ToggleStatusButton
+                      id={employee.id}
+                      status={employee.status}
+                    />
                     <EditEmployeeDialog employee={employee}>
                       <Button variant="ghost" size="sm">
                         <Pencil className="mr-2 h-4 w-4" /> Edit
