@@ -10,11 +10,12 @@ import { listEmployees } from "@/lib/db/employees";
 export default async function EmployeesPage({
   searchParams,
 }: {
-  searchParams?: { q?: string; dept?: string };
+  searchParams?: Promise<{ q?: string; dept?: string }>;
 }) {
   const employees: Employee[] = await listEmployees();
-  const q = (searchParams?.q ?? "").trim().toLowerCase();
-  const dept = (searchParams?.dept ?? "").trim().toLowerCase();
+  const sp = (await searchParams) ?? {};
+  const q = (sp.q ?? "").trim().toLowerCase();
+  const dept = (sp.dept ?? "").trim().toLowerCase();
   const filtered = employees.filter((e) => {
     const matchesQuery = q
       ? [e.name, e.email, e.position, e.department]
