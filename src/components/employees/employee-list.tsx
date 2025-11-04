@@ -32,8 +32,6 @@ export function EmployeeList({ employees }: EmployeeListProps) {
     switch (status) {
       case "active":
         return "default";
-      case "pending":
-        return "secondary";
       case "inactive":
         return "destructive";
       default:

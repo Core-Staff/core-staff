@@ -12,38 +12,27 @@ export default async function EmployeesPage({
 }: {
   searchParams?: Promise<{ q?: string; dept?: string }>;
 }) {
-  const employees: Employee[] = await listEmployees();
   const sp = (await searchParams) ?? {};
-  const q = (sp.q ?? "").trim().toLowerCase();
-  const dept = (sp.dept ?? "").trim().toLowerCase();
-  const filtered = employees.filter((e) => {
-    const matchesQuery = q
-      ? [e.name, e.email, e.position, e.department]
-          .filter(Boolean)
-          .some((v) => v.toLowerCase().includes(q))
-      : true;
-    const matchesDept =
-      dept && dept !== "all" ? e.department.toLowerCase() === dept : true;
-    return matchesQuery && matchesDept;
-  });
+  const q = (sp.q ?? "").trim();
+  const dept = (sp.dept ?? "").trim();
+  const employees: Employee[] = await listEmployees({ q, dept });
   const now = new Date();
   const stats: EmployeeStatsType = {
-    totalEmployees: filtered.length,
-    activeEmployees: filtered.filter((e) => e.status === "active").length,
-    newThisMonth: filtered.filter((e) => {
+    totalEmployees: employees.length,
+    activeEmployees: employees.filter((e) => e.status === "active").length,
+    newThisMonth: employees.filter((e) => {
       const d = new Date(e.joinDate);
       return (
         d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
       );
     }).length,
-    pendingInvites: filtered.filter((e) => e.status === "pending").length,
   };
 
   return (
     <div className="flex min-h-screen flex-col gap-8 p-8">
       <EmployeeHeader />
       <EmployeeStats stats={stats} />
-      <EmployeeList employees={filtered} />
+      <EmployeeList employees={employees} />
     </div>
   );
 }

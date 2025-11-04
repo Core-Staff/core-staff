@@ -7,7 +7,7 @@ type DbEmployee = {
   email: string;
   department: string;
   position: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
   avatar?: string | null;
   join_date: string;
   phone?: string | null;
@@ -30,11 +30,27 @@ const toEmployee = (row: DbEmployee): Employee => ({
 const required = (v: unknown): v is string =>
   typeof v === "string" && v.trim().length > 0;
 
-export async function listEmployees(): Promise<Employee[]> {
-  const { data, error } = await supabase
-    .from("employees")
-    .select("*")
-    .order("join_date", { ascending: false });
+export async function listEmployees(filters?: {
+  q?: string;
+  dept?: string;
+  status?: "active" | "inactive";
+}): Promise<Employee[]> {
+  let query = supabase.from("employees").select("*").order("join_date", {
+    ascending: false,
+  });
+  if (filters?.dept && filters.dept.toLowerCase() !== "all") {
+    query = query.eq("department", filters.dept);
+  }
+  if (filters?.status) {
+    query = query.eq("status", filters.status);
+  }
+  if (filters?.q && filters.q.trim().length > 0) {
+    const term = filters.q.trim();
+    query = query.or(
+      `name.ilike.%${term}%,email.ilike.%${term}%,position.ilike.%${term}%,department.ilike.%${term}%`,
+    );
+  }
+  const { data, error } = await query;
   if (error) throw new Error(error.message);
   return (data as DbEmployee[]).map(toEmployee);
 }
@@ -46,7 +62,7 @@ export type CreateEmployeeInput = {
   email: string;
   department: string;
   position: string;
-  status?: "active" | "inactive" | "pending";
+  status?: "active" | "inactive";
   avatar?: string;
   phone?: string;
   location?: string;
@@ -59,7 +75,7 @@ export async function createEmployee(
   const name =
     input.name ?? [input.firstName, input.lastName].filter(Boolean).join(" ");
   const joinDate = input.joinDate ?? new Date().toISOString();
-  const status = input.status ?? "pending";
+  const status = input.status ?? "active";
   if (
     !required(name) ||
     !required(input.email) ||

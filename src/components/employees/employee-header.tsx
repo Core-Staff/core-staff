@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, UserPlus, Filter, Download } from "lucide-react";
-import { InviteEmployeeDialog } from "@/components/employees/invite-employee-dialog";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -95,14 +94,6 @@ export function EmployeeHeader() {
           <Download className="mr-2 h-4 w-4" />
           Export
         </Button>
-
-        {/* Invite Employee Button */}
-        <InviteEmployeeDialog>
-          <Button>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Invite Employee
-          </Button>
-        </InviteEmployeeDialog>
       </div>
     </div>
   );
