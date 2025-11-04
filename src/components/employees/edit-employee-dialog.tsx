@@ -39,11 +39,33 @@ export function EditEmployeeDialog({
   const [position, setPosition] = useState(employee.position);
   const [status, setStatus] = useState<Employee["status"]>(employee.status);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [toast, setToast] = useState<string>("");
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 4000);
+  };
+
+  const validate = () => {
+    const next: Record<string, string> = {};
+    if (!name.trim()) next.name = "Name is required";
+    const emailOk = /.+@.+\..+/.test(email.trim());
+    if (!emailOk) next.email = "Valid email is required";
+    if (!department.trim()) next.department = "Department is required";
+    if (!position.trim()) next.position = "Position is required";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      if (!validate()) {
+        showToast("Please fix validation errors");
+        return;
+      }
       const res = await fetch(`/api/employees/${employee.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -54,6 +76,7 @@ export function EditEmployeeDialog({
       setOpen(false);
       router.refresh();
     } catch {
+      showToast("Failed to update employee");
     } finally {
       setSubmitting(false);
     }
@@ -63,6 +86,11 @@ export function EditEmployeeDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
+        {toast && (
+          <div className="fixed right-4 top-4 z-50 rounded-md bg-red-600 px-3 py-2 text-sm text-white shadow-md">
+            {toast}
+          </div>
+        )}
         <DialogHeader>
           <DialogTitle>Edit Employee</DialogTitle>
         </DialogHeader>
@@ -75,6 +103,9 @@ export function EditEmployeeDialog({
               onChange={(e) => setName(e.target.value)}
               required
             />
+            {errors.name && (
+              <div className="text-red-600 text-xs">{errors.name}</div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -85,6 +116,9 @@ export function EditEmployeeDialog({
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            {errors.email && (
+              <div className="text-red-600 text-xs">{errors.email}</div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="department">Department</Label>
@@ -101,6 +135,9 @@ export function EditEmployeeDialog({
                 <SelectItem value="Operations">Operations</SelectItem>
               </SelectContent>
             </Select>
+            {errors.department && (
+              <div className="text-red-600 text-xs">{errors.department}</div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="position">Position</Label>
@@ -110,6 +147,9 @@ export function EditEmployeeDialog({
               onChange={(e) => setPosition(e.target.value)}
               required
             />
+            {errors.position && (
+              <div className="text-red-600 text-xs">{errors.position}</div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
