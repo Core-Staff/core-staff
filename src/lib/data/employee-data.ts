@@ -62,7 +62,7 @@ export const mockEmployees: Employee[] = [
     email: "alex.martinez@corestaff.com",
     department: "Finance",
     position: "Financial Analyst",
-    status: "pending",
+    status: "inactive",
     joinDate: "2024-01-08",
     phone: "+1 (555) 678-9012",
     location: "Miami, FL",
@@ -95,5 +95,4 @@ export const mockEmployeeStats: EmployeeStats = {
   totalEmployees: 156,
   activeEmployees: 142,
   newThisMonth: 8,
-  pendingInvites: 6,
 };

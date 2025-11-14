@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { createEmployee, listEmployees } from "@/lib/db/employees";
 
-export async function GET(request?: Request) {
+export async function GET(request: NextRequest) {
   try {
     const url = request ? new URL(request.url) : null;
     const q = url ? (url.searchParams.get("q") ?? undefined) : undefined;
@@ -19,7 +20,7 @@ export async function GET(request?: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const created = await createEmployee(body);

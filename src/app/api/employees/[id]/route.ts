@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { deleteEmployee, updateEmployee } from "@/lib/db/employees";
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const body = await request.json();
-    const updated = await updateEmployee(params.id, body);
+    const { id } = await context.params;
+    const updated = await updateEmployee(id, body);
     return NextResponse.json({ ok: true, data: updated });
   } catch (e) {
     const msg = (e as Error).message;
@@ -17,11 +19,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _: Request,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const result = await deleteEmployee(params.id);
+    const { id } = await context.params;
+    const result = await deleteEmployee(id);
     return NextResponse.json({ ok: true, data: result });
   } catch (e) {
     const msg = (e as Error).message;
