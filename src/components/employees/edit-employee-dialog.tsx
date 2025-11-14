@@ -21,6 +21,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Employee } from "@/types/employee";
+export function validateEditEmployeeInput(input: {
+  name: string;
+  email: string;
+  department: string;
+  position: string;
+}): Record<string, string> {
+  const next: Record<string, string> = {};
+  const name = input.name.trim();
+  const email = input.email.trim();
+  const department = input.department.trim();
+  const position = input.position.trim();
+  if (!name) next.name = "Name is required";
+  const emailOk = /.+@.+\..+/.test(email);
+  if (!emailOk) next.email = "Valid email is required";
+  if (!department) next.department = "Department is required";
+  if (!position) next.position = "Position is required";
+  return next;
+}
 
 interface EditEmployeeDialogProps {
   employee: Employee;
@@ -48,12 +66,12 @@ export function EditEmployeeDialog({
   };
 
   const validate = () => {
-    const next: Record<string, string> = {};
-    if (!name.trim()) next.name = "Name is required";
-    const emailOk = /.+@.+\..+/.test(email.trim());
-    if (!emailOk) next.email = "Valid email is required";
-    if (!department.trim()) next.department = "Department is required";
-    if (!position.trim()) next.position = "Position is required";
+    const next = validateEditEmployeeInput({
+      name,
+      email,
+      department,
+      position,
+    });
     setErrors(next);
     return Object.keys(next).length === 0;
   };

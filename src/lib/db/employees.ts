@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/data/supabase";
 import type { Employee } from "@/types/employee";
 
-type DbEmployee = {
+export type DbEmployee = {
   id: string;
   name: string;
   email: string;
@@ -14,7 +14,7 @@ type DbEmployee = {
   location?: string | null;
 };
 
-const toEmployee = (row: DbEmployee): Employee => ({
+export const toEmployee = (row: DbEmployee): Employee => ({
   id: row.id,
   name: row.name,
   email: row.email,

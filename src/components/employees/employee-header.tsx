@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Search, UserPlus, Filter } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,24 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+export function validateAddEmployeeInput(input: {
+  name: string;
+  email: string;
+  department: string;
+  position: string;
+}): Record<string, string> {
+  const next: Record<string, string> = {};
+  const name = input.name.trim();
+  const email = input.email.trim();
+  const department = input.department.trim();
+  const position = input.position.trim();
+  if (!name) next.name = "Name is required";
+  const emailOk = /.+@.+\..+/.test(email);
+  if (!emailOk) next.email = "Valid email is required";
+  if (!department) next.department = "Department is required";
+  if (!position) next.position = "Position is required";
+  return next;
+}
 
 export function EmployeeHeader() {
   const router = useRouter();
@@ -38,7 +56,6 @@ export function EmployeeHeader() {
   useEffect(() => {
     setQuery(searchParams.get("q") ?? "");
     setDept(searchParams.get("dept") ?? "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const updateUrl = (next: { q?: string; dept?: string }) => {
@@ -66,12 +83,12 @@ export function EmployeeHeader() {
   };
 
   const validateAdd = () => {
-    const next: Record<string, string> = {};
-    if (!name.trim()) next.name = "Name is required";
-    const emailOk = /.+@.+\..+/.test(email.trim());
-    if (!emailOk) next.email = "Valid email is required";
-    if (!department.trim()) next.department = "Department is required";
-    if (!position.trim()) next.position = "Position is required";
+    const next = validateAddEmployeeInput({
+      name,
+      email,
+      department,
+      position,
+    });
     setErrors(next);
     return Object.keys(next).length === 0;
   };
