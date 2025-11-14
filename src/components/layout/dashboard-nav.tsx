@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, Clock, TrendingUp, BarChart3 } from "lucide-react";
+import { Building2, Users, Clock, TrendingUp, BarChart3, UserRoundX } from "lucide-react";
 
 const navItems = [
   {
@@ -25,6 +25,11 @@ const navItems = [
     title: "Reports",
     href: "/reports",
     icon: BarChart3,
+  },
+  {
+    title: "Leave Requests",
+    href: "/leaveRequests",
+    icon: UserRoundX,
   },
 ];
 
