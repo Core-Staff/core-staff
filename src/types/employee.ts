@@ -16,12 +16,3 @@ export interface EmployeeStats {
   activeEmployees: number;
   newThisMonth: number;
 }
-
-export interface InviteEmployeeData {
-  email: string;
-  firstName: string;
-  lastName: string;
-  department: string;
-  position: string;
-  message?: string;
-}
