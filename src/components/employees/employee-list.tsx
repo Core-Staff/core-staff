@@ -1,3 +1,4 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -11,19 +12,18 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Employee } from "@/types/employee";
-import { MoreHorizontal, Mail, Phone, MapPin } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Pencil, Trash, Mail } from "lucide-react";
+import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
+import { DeleteEmployeeDialog } from "@/components/employees/delete-employee-dialog";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface EmployeeListProps {
   employees: Employee[];
 }
 
 export function EmployeeList({ employees }: EmployeeListProps) {
+  const router = useRouter();
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -36,13 +36,42 @@ export function EmployeeList({ employees }: EmployeeListProps) {
     switch (status) {
       case "active":
         return "default";
-      case "pending":
-        return "secondary";
       case "inactive":
         return "destructive";
       default:
         return "outline";
     }
+  };
+
+  const ToggleStatusButton = ({
+    id,
+    status,
+  }: {
+    id: string;
+    status: string;
+  }) => {
+    const [loading, setLoading] = useState(false);
+    const next = status === "active" ? "inactive" : "active";
+    const onClick = async () => {
+      if (loading) return;
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/employees/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: next }),
+        });
+        await res.json();
+        router.refresh();
+      } finally {
+        setLoading(false);
+      }
+    };
+    return (
+      <Button variant="ghost" size="sm" onClick={onClick} disabled={loading}>
+        {next === "active" ? "Activate" : "Deactivate"}
+      </Button>
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -71,6 +100,16 @@ export function EmployeeList({ employees }: EmployeeListProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {employees.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground py-6"
+                >
+                  No employees found
+                </TableCell>
+              </TableRow>
+            )}
             {employees.map((employee) => (
               <TableRow key={employee.id}>
                 <TableCell>
@@ -99,27 +138,26 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                 </TableCell>
                 <TableCell>{formatDate(employee.joinDate)}</TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                  <div className="inline-flex gap-2" aria-label="Actions">
+                    <ToggleStatusButton
+                      id={employee.id}
+                      status={employee.status}
+                    />
+                    <EditEmployeeDialog employee={employee}>
                       <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
+                        <Pencil className="mr-2 h-4 w-4" /> Edit
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Send Email
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Phone className="mr-2 h-4 w-4" />
-                        Call
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <MapPin className="mr-2 h-4 w-4" />
-                        View Profile
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    </EditEmployeeDialog>
+                    <DeleteEmployeeDialog employee={employee}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive"
+                      >
+                        <Trash className="mr-2 h-4 w-4" /> Delete
+                      </Button>
+                    </DeleteEmployeeDialog>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

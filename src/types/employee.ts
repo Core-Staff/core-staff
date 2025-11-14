@@ -4,7 +4,7 @@ export interface Employee {
   email: string;
   department: string;
   position: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
   avatar?: string;
   joinDate: string;
   phone?: string;
@@ -15,14 +15,4 @@ export interface EmployeeStats {
   totalEmployees: number;
   activeEmployees: number;
   newThisMonth: number;
-  pendingInvites: number;
-}
-
-export interface InviteEmployeeData {
-  email: string;
-  firstName: string;
-  lastName: string;
-  department: string;
-  position: string;
-  message?: string;
 }

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, UserPlus, Clock } from "lucide-react";
+import { Users, UserCheck, UserPlus } from "lucide-react";
 import { EmployeeStats as EmployeeStatsType } from "@/types/employee";
 
 interface EmployeeStatsProps {
@@ -29,17 +29,10 @@ export function EmployeeStats({ stats }: EmployeeStatsProps) {
       color: "text-purple-500",
       bgColor: "bg-purple-50",
     },
-    {
-      title: "Pending Invites",
-      value: stats.pendingInvites,
-      icon: Clock,
-      color: "text-orange-500",
-      bgColor: "bg-orange-50",
-    },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {statCards.map((stat) => {
         const Icon = stat.icon;
         return (
