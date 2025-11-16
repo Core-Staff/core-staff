@@ -6,10 +6,11 @@ const goalService = new GoalService();
 // GET single goal by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const goal = goalService.getById(params.id);
+    const { id } = await params;
+    const goal = goalService.getById(id);
 
     if (!goal) {
       return NextResponse.json(
@@ -25,7 +26,7 @@ export async function GET(
       success: true,
       data: goal,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
@@ -39,11 +40,12 @@ export async function GET(
 // PATCH update goal
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
-    const updatedGoal = goalService.update(params.id, body);
+    const updatedGoal = goalService.update(id, body);
 
     if (!updatedGoal) {
       return NextResponse.json(
@@ -60,7 +62,7 @@ export async function PATCH(
       data: updatedGoal,
       message: "Goal updated successfully",
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
@@ -74,10 +76,11 @@ export async function PATCH(
 // DELETE goal
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const deleted = goalService.delete(params.id);
+    const { id } = await params;
+    const deleted = goalService.delete(id);
 
     if (!deleted) {
       return NextResponse.json(
@@ -93,7 +96,7 @@ export async function DELETE(
       success: true,
       message: "Goal deleted successfully",
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,

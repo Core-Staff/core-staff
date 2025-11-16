@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: stats,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,

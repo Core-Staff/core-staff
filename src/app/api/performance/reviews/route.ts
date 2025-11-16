@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       data: reviews,
       count: reviews.length,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
