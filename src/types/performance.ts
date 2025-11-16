@@ -2,13 +2,20 @@ export interface PerformanceReview {
   id: string;
   employeeId: string;
   employeeName: string;
+  position?: string;
   reviewerId: string;
   reviewerName: string;
   period: string;
-  status: "draft" | "pending" | "completed";
+  reviewDate: string;
+  status: "draft" | "pending" | "in-progress" | "completed";
   overallRating: number;
-  createdAt: string;
-  updatedAt: string;
+  metrics?: PerformanceMetric[];
+  strengths?: string[];
+  areasForImprovement?: string[];
+  goals?: string[];
+  comments?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Goal {
@@ -16,17 +23,21 @@ export interface Goal {
   employeeId: string;
   title: string;
   description: string;
+  category?: string;
   status: "not-started" | "in-progress" | "completed";
   progress: number;
-  dueDate: string;
+  deadline: string;
+  dueDate?: string;
   createdAt: string;
+  milestones?: string[];
 }
 
 export interface PerformanceMetric {
-  id: string;
+  id?: string;
   name: string;
-  category: string;
+  category?: string;
   rating: number;
-  maxRating: number;
+  weight?: number;
+  maxRating?: number;
   comments?: string;
 }
