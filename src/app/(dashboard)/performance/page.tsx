@@ -4,15 +4,11 @@ import { performanceReviews, goals } from "@/lib/data/performance-data";
 import { FileText, Target, TrendingUp, Users } from "lucide-react";
 
 export default function PerformancePage() {
-  const completedReviews = performanceReviews.filter(r => r.status === "completed").length;
   const pendingReviews = performanceReviews.filter(r => r.status === "pending").length;
   const activeGoals = goals.filter(g => g.status === "in-progress").length;
   const completedGoals = goals.filter(g => g.status === "completed").length;
-  const avgRating = (
-    performanceReviews
-      .filter(r => r.status === "completed")
-      .reduce((acc, r) => acc + r.overallRating, 0) / completedReviews
-  ).toFixed(1);
+  const totalGoals = goals.length;
+  const goalCompletionRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
   return (
     <div className="flex min-h-screen flex-col gap-8 p-8">
@@ -39,8 +35,8 @@ export default function PerformancePage() {
           iconColor="text-blue-600"
         />
         <StatCard
-          title="Avg Rating"
-          value={avgRating}
+          title="Goal Completion"
+          value={`${goalCompletionRate}%`}
           icon={TrendingUp}
           trend={{ value: 5, isPositive: true }}
           iconColor="text-green-600"
