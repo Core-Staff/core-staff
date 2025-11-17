@@ -1,13 +1,16 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ReviewDialog } from "./review-dialog";
 import { PerformanceReview } from "@/types/performance";
-import { Calendar, User, Star } from "lucide-react";
+import { Calendar, User, Star, Eye } from "lucide-react";
 
 interface ReviewCardProps {
   review: PerformanceReview;
+  onUpdate?: () => void;
 }
 
-export function ReviewCard({ review }: ReviewCardProps) {
+export function ReviewCard({ review, onUpdate }: ReviewCardProps) {
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "completed":
@@ -18,19 +21,6 @@ export function ReviewCard({ review }: ReviewCardProps) {
         return "outline";
       default:
         return "outline";
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "text-green-600";
-      case "pending":
-        return "text-yellow-600";
-      case "draft":
-        return "text-gray-600";
-      default:
-        return "text-gray-600";
     }
   };
 
@@ -66,9 +56,24 @@ export function ReviewCard({ review }: ReviewCardProps) {
         </div>
         
         <div className="text-xs text-muted-foreground">
-          Updated {new Date(review.updatedAt).toLocaleDateString()}
+          Review Date: {new Date(review.reviewDate).toLocaleDateString()}
         </div>
       </CardContent>
+      <CardFooter className="gap-2 pt-3">
+        <Button variant="outline" size="sm" className="flex-1">
+          <Eye className="mr-2 h-4 w-4" />
+          View
+        </Button>
+        <ReviewDialog
+          review={review}
+          onSuccess={onUpdate}
+          trigger={
+            <Button variant="outline" size="sm" className="flex-1">
+              Edit
+            </Button>
+          }
+        />
+      </CardFooter>
     </Card>
   );
 }

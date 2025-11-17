@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Goal } from "@/types/performance";
 import { Calendar, CheckCircle2, Circle, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -35,7 +34,7 @@ export function GoalCard({ goal }: GoalCardProps) {
     }
   };
 
-  const isOverdue = new Date(goal.dueDate) < new Date() && goal.status !== "completed";
+  const isOverdue = new Date(goal.deadline) < new Date() && goal.status !== "completed";
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -77,7 +76,7 @@ export function GoalCard({ goal }: GoalCardProps) {
             "font-medium",
             isOverdue ? "text-red-600" : ""
           )}>
-            {new Date(goal.dueDate).toLocaleDateString()}
+            {new Date(goal.deadline).toLocaleDateString()}
             {isOverdue && " (Overdue)"}
           </span>
         </div>
