@@ -6,10 +6,11 @@ const reviewService = new PerformanceReviewService();
 // GET single performance review by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const review = reviewService.getById(params.id);
+    const { id } = await params;
+    const review = reviewService.getById(id);
 
     if (!review) {
       return NextResponse.json(
@@ -25,7 +26,7 @@ export async function GET(
       success: true,
       data: review,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
@@ -39,11 +40,12 @@ export async function GET(
 // PATCH update performance review
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
-    const updatedReview = reviewService.update(params.id, body);
+    const updatedReview = reviewService.update(id, body);
 
     if (!updatedReview) {
       return NextResponse.json(
@@ -60,7 +62,7 @@ export async function PATCH(
       data: updatedReview,
       message: "Performance review updated successfully",
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
@@ -74,10 +76,11 @@ export async function PATCH(
 // DELETE performance review
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const deleted = reviewService.delete(params.id);
+    const { id } = await params;
+    const deleted = reviewService.delete(id);
 
     if (!deleted) {
       return NextResponse.json(
@@ -93,7 +96,7 @@ export async function DELETE(
       success: true,
       message: "Performance review deleted successfully",
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
