@@ -4,11 +4,9 @@ const API_BASE = "/api/performance";
 
 // Type for API responses
 type ApiResponse<T> = {
-  success: boolean;
+  ok: boolean;
   data?: T;
   error?: string;
-  message?: string;
-  count?: number;
 };
 
 // Reviews API
@@ -36,7 +34,7 @@ export const reviewsApi = {
 
   // Create new review
   create: async (
-    review: Omit<PerformanceReview, "id">
+    review: Omit<PerformanceReview, "id">,
   ): Promise<ApiResponse<PerformanceReview>> => {
     const response = await fetch(`${API_BASE}/reviews`, {
       method: "POST",
@@ -49,7 +47,7 @@ export const reviewsApi = {
   // Update review
   update: async (
     id: string,
-    updates: Partial<PerformanceReview>
+    updates: Partial<PerformanceReview>,
   ): Promise<ApiResponse<PerformanceReview>> => {
     const response = await fetch(`${API_BASE}/reviews/${id}`, {
       method: "PATCH",
@@ -102,7 +100,7 @@ export const goalsApi = {
   // Update goal
   update: async (
     id: string,
-    updates: Partial<Goal>
+    updates: Partial<Goal>,
   ): Promise<ApiResponse<Goal>> => {
     const response = await fetch(`${API_BASE}/goals/${id}`, {
       method: "PATCH",
@@ -124,7 +122,34 @@ export const goalsApi = {
 // Stats API
 export const statsApi = {
   // Get performance statistics
-  get: async (employeeId?: string): Promise<ApiResponse<any>> => {
+  get: async (
+    employeeId?: string,
+  ): Promise<
+    ApiResponse<{
+      reviews: {
+        total: number;
+        completed: number;
+        pending: number;
+        inProgress: number;
+        avgRating: number;
+      };
+      goals: {
+        total: number;
+        completed: number;
+        inProgress: number;
+        notStarted: number;
+        avgProgress: number;
+        byCategory: Record<string, number>;
+      };
+      trends: {
+        performanceTrend: Array<{
+          period: string;
+          rating: number;
+          date: string;
+        }>;
+      };
+    }>
+  > => {
     const params = employeeId
       ? `?employeeId=${encodeURIComponent(employeeId)}`
       : "";
