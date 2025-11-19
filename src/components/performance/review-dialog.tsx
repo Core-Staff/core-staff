@@ -33,7 +33,7 @@ export function ReviewDialog({
       if (review) {
         // Update existing review
         const response = await reviewsApi.update(review.id, data);
-        if (response.success) {
+        if (response.ok) {
           console.log("Review updated successfully");
           setOpen(false);
           onSuccess?.();
@@ -43,7 +43,7 @@ export function ReviewDialog({
       } else {
         // Create new review
         const response = await reviewsApi.create(data);
-        if (response.success) {
+        if (response.ok) {
           console.log("Review created successfully");
           setOpen(false);
           onSuccess?.();
