@@ -22,7 +22,7 @@ export class PerformanceReviewService {
 
     if (filters?.employeeId) {
       filtered = filtered.filter(
-        (review) => review.employeeId === filters.employeeId
+        (review) => review.employeeId === filters.employeeId,
       );
     }
 
@@ -50,7 +50,10 @@ export class PerformanceReviewService {
   }
 
   // Update existing review
-  update(id: string, updates: Partial<PerformanceReview>): PerformanceReview | null {
+  update(
+    id: string,
+    updates: Partial<PerformanceReview>,
+  ): PerformanceReview | null {
     const index = this.reviews.findIndex((review) => review.id === id);
 
     if (index === -1) {
@@ -85,7 +88,7 @@ export class PerformanceReviewService {
         acc[review.status] = (acc[review.status] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
   }
 
@@ -96,7 +99,7 @@ export class PerformanceReviewService {
       : this.reviews;
 
     const completed = filtered.filter(
-      (r) => r.status === "completed" && r.overallRating > 0
+      (r) => r.status === "completed" && r.overallRating > 0,
     );
 
     if (completed.length === 0) return 0;
@@ -164,7 +167,9 @@ export class GoalService {
     }
 
     if (filters?.employeeId) {
-      filtered = filtered.filter((goal) => goal.employeeId === filters.employeeId);
+      filtered = filtered.filter(
+        (goal) => goal.employeeId === filters.employeeId,
+      );
     }
 
     return filtered;
@@ -222,7 +227,7 @@ export class GoalService {
         acc[goal.status] = (acc[goal.status] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
   }
 
@@ -230,10 +235,11 @@ export class GoalService {
   getByCategory(): Record<string, number> {
     return this.goals.reduce(
       (acc, goal) => {
-        acc[goal.category] = (acc[goal.category] || 0) + 1;
+        const category = goal.category ?? "Uncategorized";
+        acc[category] = (acc[category] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
   }
 
