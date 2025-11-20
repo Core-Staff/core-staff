@@ -8,17 +8,10 @@ import {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const status = searchParams.get("status") as
-      | "draft"
-      | "pending"
-      | "in-progress"
-      | "completed"
-      | null;
     const employeeId = searchParams.get("employeeId") || undefined;
     const reviewerId = searchParams.get("reviewerId") || undefined;
 
     const reviews = await listPerformanceReviews({
-      status: status ?? undefined,
       employeeId,
       reviewerId,
     });
