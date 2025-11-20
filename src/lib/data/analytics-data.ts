@@ -4,9 +4,9 @@ import {
   AttendanceTrend,
   PerformanceDistribution,
   TopPerformer,
-  LeaveRequest,
   RecentActivity,
 } from "@/types/analytics";
+import type { LeaveRequest } from "@/types/leaveRequest";
 
 export const metricsData: MetricCard[] = [
   {
