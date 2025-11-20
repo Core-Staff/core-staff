@@ -5,15 +5,10 @@ import type { PerformanceReview, PerformanceMetric } from "@/types/performance";
 export type DbPerformanceReview = {
   id: string;
   employee_id: string;
-  employee_name: string;
-  position?: string | null;
   reviewer_id: string;
-  reviewer_name: string;
-  period: string;
   review_date: string;
-  status: "draft" | "pending" | "in-progress" | "completed";
   overall_rating: number;
-  metrics?: PerformanceMetric[] | null;
+  position: string;
   strengths?: string[] | null;
   areas_for_improvement?: string[] | null;
   goals?: string[] | null;
@@ -23,20 +18,22 @@ export type DbPerformanceReview = {
 };
 
 // Convert database row to app type (snake_case -> camelCase)
+// Note: employeeName, reviewerName, period, status, metrics need to be joined/computed separately
 export const toPerformanceReview = (
   row: DbPerformanceReview,
+  employeeName?: string,
+  reviewerName?: string,
 ): PerformanceReview => ({
   id: row.id,
   employeeId: row.employee_id,
-  employeeName: row.employee_name,
-  position: row.position ?? undefined,
+  employeeName: employeeName || "Unknown",
+  position: row.position,
   reviewerId: row.reviewer_id,
-  reviewerName: row.reviewer_name,
-  period: row.period,
+  reviewerName: reviewerName || "Unknown",
+  period: "", // Not in DB, needs to be computed or passed
   reviewDate: row.review_date,
-  status: row.status,
+  status: "completed", // Not in DB, default to completed
   overallRating: row.overall_rating,
-  metrics: row.metrics ?? undefined,
   strengths: row.strengths ?? undefined,
   areasForImprovement: row.areas_for_improvement ?? undefined,
   goals: row.goals ?? undefined,
@@ -51,19 +48,18 @@ const required = (v: unknown): v is string =>
 // List all performance reviews with optional filters
 export async function listPerformanceReviews(filters?: {
   employeeId?: string;
-  status?: "draft" | "pending" | "in-progress" | "completed";
   reviewerId?: string;
 }): Promise<PerformanceReview[]> {
   let query = supabase
     .from("performance_reviews")
-    .select("*")
+    .select(`
+      *,
+      employees!employee_id(name)
+    `)
     .order("review_date", { ascending: false });
 
   if (filters?.employeeId) {
     query = query.eq("employee_id", filters.employeeId);
-  }
-  if (filters?.status) {
-    query = query.eq("status", filters.status);
   }
   if (filters?.reviewerId) {
     query = query.eq("reviewer_id", filters.reviewerId);
@@ -71,7 +67,14 @@ export async function listPerformanceReviews(filters?: {
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
-  return (data as DbPerformanceReview[]).map(toPerformanceReview);
+  
+  return (data as any[]).map((row) =>
+    toPerformanceReview(
+      row as DbPerformanceReview,
+      row.employees?.name,
+      undefined // reviewerName would need another join
+    )
+  );
 }
 
 // Get a single performance review by ID
@@ -82,26 +85,29 @@ export async function getPerformanceReview(
 
   const { data, error } = await supabase
     .from("performance_reviews")
-    .select("*")
+    .select(`
+      *,
+      employees!employee_id(name)
+    `)
     .eq("id", id)
     .single();
 
   if (error) throw new Error(error.message);
-  return toPerformanceReview(data as DbPerformanceReview);
+  const row = data as any;
+  return toPerformanceReview(
+    row as DbPerformanceReview,
+    row.employees?.name,
+    undefined
+  );
 }
 
 // Create input type
 export type CreatePerformanceReviewInput = {
   employeeId: string;
-  employeeName: string;
-  position?: string;
   reviewerId: string;
-  reviewerName: string;
-  period: string;
   reviewDate: string;
-  status?: "draft" | "pending" | "in-progress" | "completed";
   overallRating: number;
-  metrics?: PerformanceMetric[];
+  position: string;
   strengths?: string[];
   areasForImprovement?: string[];
   goals?: string[];
@@ -114,26 +120,19 @@ export async function createPerformanceReview(
 ): Promise<PerformanceReview> {
   if (
     !required(input.employeeId) ||
-    !required(input.employeeName) ||
     !required(input.reviewerId) ||
-    !required(input.reviewerName) ||
-    !required(input.period) ||
-    !required(input.reviewDate)
+    !required(input.reviewDate) ||
+    !required(input.position)
   ) {
     throw new Error("invalid_payload");
   }
 
   const row: Partial<DbPerformanceReview> = {
     employee_id: input.employeeId,
-    employee_name: input.employeeName,
-    position: input.position ?? null,
     reviewer_id: input.reviewerId,
-    reviewer_name: input.reviewerName,
-    period: input.period,
     review_date: input.reviewDate,
-    status: input.status ?? "draft",
     overall_rating: input.overallRating,
-    metrics: input.metrics ?? null,
+    position: input.position,
     strengths: input.strengths ?? null,
     areas_for_improvement: input.areasForImprovement ?? null,
     goals: input.goals ?? null,
@@ -143,11 +142,19 @@ export async function createPerformanceReview(
   const { data, error } = await supabase
     .from("performance_reviews")
     .insert([row])
-    .select("*")
+    .select(`
+      *,
+      employees!employee_id(name)
+    `)
     .single();
 
   if (error) throw new Error(error.message);
-  return toPerformanceReview(data as DbPerformanceReview);
+  const result = data as any;
+  return toPerformanceReview(
+    result as DbPerformanceReview,
+    result.employees?.name,
+    undefined
+  );
 }
 
 // Update input type
@@ -165,18 +172,11 @@ export async function updatePerformanceReview(
   const payload: Partial<DbPerformanceReview> = {};
 
   if (input.employeeId !== undefined) payload.employee_id = input.employeeId;
-  if (input.employeeName !== undefined)
-    payload.employee_name = input.employeeName;
-  if (input.position !== undefined) payload.position = input.position ?? null;
+  if (input.position !== undefined) payload.position = input.position;
   if (input.reviewerId !== undefined) payload.reviewer_id = input.reviewerId;
-  if (input.reviewerName !== undefined)
-    payload.reviewer_name = input.reviewerName;
-  if (input.period !== undefined) payload.period = input.period;
   if (input.reviewDate !== undefined) payload.review_date = input.reviewDate;
-  if (input.status !== undefined) payload.status = input.status;
   if (input.overallRating !== undefined)
     payload.overall_rating = input.overallRating;
-  if (input.metrics !== undefined) payload.metrics = input.metrics ?? null;
   if (input.strengths !== undefined)
     payload.strengths = input.strengths ?? null;
   if (input.areasForImprovement !== undefined)
@@ -188,11 +188,19 @@ export async function updatePerformanceReview(
     .from("performance_reviews")
     .update(payload)
     .eq("id", id)
-    .select("*")
+    .select(`
+      *,
+      employees!employee_id(name)
+    `)
     .single();
 
   if (error) throw new Error(error.message);
-  return toPerformanceReview(data as DbPerformanceReview);
+  const result = data as any;
+  return toPerformanceReview(
+    result as DbPerformanceReview,
+    result.employees?.name,
+    undefined
+  );
 }
 
 // Delete a performance review
