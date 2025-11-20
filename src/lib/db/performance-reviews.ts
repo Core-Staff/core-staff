@@ -23,7 +23,9 @@ export type DbPerformanceReview = {
 };
 
 // Convert database row to app type (snake_case -> camelCase)
-export const toPerformanceReview = (row: DbPerformanceReview): PerformanceReview => ({
+export const toPerformanceReview = (
+  row: DbPerformanceReview,
+): PerformanceReview => ({
   id: row.id,
   employeeId: row.employee_id,
   employeeName: row.employee_name,
@@ -73,7 +75,9 @@ export async function listPerformanceReviews(filters?: {
 }
 
 // Get a single performance review by ID
-export async function getPerformanceReview(id: string): Promise<PerformanceReview> {
+export async function getPerformanceReview(
+  id: string,
+): Promise<PerformanceReview> {
   if (!required(id)) throw new Error("invalid_id");
 
   const { data, error } = await supabase
@@ -161,16 +165,20 @@ export async function updatePerformanceReview(
   const payload: Partial<DbPerformanceReview> = {};
 
   if (input.employeeId !== undefined) payload.employee_id = input.employeeId;
-  if (input.employeeName !== undefined) payload.employee_name = input.employeeName;
+  if (input.employeeName !== undefined)
+    payload.employee_name = input.employeeName;
   if (input.position !== undefined) payload.position = input.position ?? null;
   if (input.reviewerId !== undefined) payload.reviewer_id = input.reviewerId;
-  if (input.reviewerName !== undefined) payload.reviewer_name = input.reviewerName;
+  if (input.reviewerName !== undefined)
+    payload.reviewer_name = input.reviewerName;
   if (input.period !== undefined) payload.period = input.period;
   if (input.reviewDate !== undefined) payload.review_date = input.reviewDate;
   if (input.status !== undefined) payload.status = input.status;
-  if (input.overallRating !== undefined) payload.overall_rating = input.overallRating;
+  if (input.overallRating !== undefined)
+    payload.overall_rating = input.overallRating;
   if (input.metrics !== undefined) payload.metrics = input.metrics ?? null;
-  if (input.strengths !== undefined) payload.strengths = input.strengths ?? null;
+  if (input.strengths !== undefined)
+    payload.strengths = input.strengths ?? null;
   if (input.areasForImprovement !== undefined)
     payload.areas_for_improvement = input.areasForImprovement ?? null;
   if (input.goals !== undefined) payload.goals = input.goals ?? null;
@@ -188,7 +196,9 @@ export async function updatePerformanceReview(
 }
 
 // Delete a performance review
-export async function deletePerformanceReview(id: string): Promise<{ id: string }> {
+export async function deletePerformanceReview(
+  id: string,
+): Promise<{ id: string }> {
   if (!required(id)) throw new Error("invalid_id");
 
   const { error } = await supabase

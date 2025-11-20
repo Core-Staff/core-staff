@@ -10,22 +10,28 @@ export async function GET() {
       .limit(1);
 
     if (error) {
-      return NextResponse.json({ 
-        ok: false, 
-        error: error.message,
-        details: error 
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          ok: false,
+          error: error.message,
+          details: error,
+        },
+        { status: 500 },
+      );
     }
 
-    return NextResponse.json({ 
-      ok: true, 
+    return NextResponse.json({
+      ok: true,
       data,
-      message: "Table exists and is accessible" 
+      message: "Table exists and is accessible",
     });
   } catch (e) {
-    return NextResponse.json({ 
-      ok: false, 
-      error: (e as Error).message 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        ok: false,
+        error: (e as Error).message,
+      },
+      { status: 500 },
+    );
   }
 }
