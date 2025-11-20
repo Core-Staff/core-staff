@@ -1,30 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PerformanceReviewService } from "@/lib/services/PerformanceService";
-
-const reviewService = new PerformanceReviewService();
+import {
+  listPerformanceReviews,
+  createPerformanceReview,
+} from "@/lib/db/performance-reviews";
 
 // GET all performance reviews
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const status = searchParams.get("status") || undefined;
+    const status = searchParams.get("status") as
+      | "draft"
+      | "pending"
+      | "in-progress"
+      | "completed"
+      | null;
     const employeeId = searchParams.get("employeeId") || undefined;
-    const period = searchParams.get("period") || undefined;
+    const reviewerId = searchParams.get("reviewerId") || undefined;
 
-    const reviews = reviewService.getAll({ status, employeeId, period });
+    const reviews = await listPerformanceReviews({
+      status: status ?? undefined,
+      employeeId,
+      reviewerId,
+    });
 
     return NextResponse.json({
-      success: true,
+      ok: true,
       data: reviews,
-      count: reviews.length,
     });
-  } catch {
+  } catch (e) {
     return NextResponse.json(
       {
-        success: false,
-        error: "Failed to fetch performance reviews",
+        ok: false,
+        error: (e as Error).message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -33,51 +42,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-
-    // Validate required fields
-    const validation = reviewService.validateCreate(body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: validation.errors.join(", "),
-        },
-        { status: 400 }
-      );
-    }
-
-    const newReview = reviewService.create({
-      employeeId: body.employeeId,
-      employeeName: body.employeeName,
-      position: body.position || "Employee",
-      reviewerId: body.reviewerId,
-      reviewerName: body.reviewerName,
-      period: body.period,
-      reviewDate: body.reviewDate,
-      status: body.status || "pending",
-      overallRating: body.overallRating || 0,
-      metrics: body.metrics || [],
-      strengths: body.strengths || [],
-      areasForImprovement: body.areasForImprovement || [],
-      goals: body.goals || [],
-      comments: body.comments || "",
-    });
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: newReview,
-        message: "Performance review created successfully",
-      },
-      { status: 201 }
-    );
-  } catch {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to create performance review",
-      },
-      { status: 500 }
-    );
+    const created = await createPerformanceReview(body);
+    return NextResponse.json({ ok: true, data: created }, { status: 201 });
+  } catch (e) {
+    const msg = (e as Error).message;
+    const status = msg === "invalid_payload" ? 400 : 500;
+    return NextResponse.json({ ok: false, error: msg }, { status });
   }
 }

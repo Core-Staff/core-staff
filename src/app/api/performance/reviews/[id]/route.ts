@@ -1,108 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PerformanceReviewService } from "@/lib/services/PerformanceService";
-
-const reviewService = new PerformanceReviewService();
+import {
+  getPerformanceReview,
+  updatePerformanceReview,
+  deletePerformanceReview,
+} from "@/lib/db/performance-reviews";
 
 // GET single performance review by ID
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-    const review = reviewService.getById(id);
-
-    if (!review) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Performance review not found",
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: review,
-    });
-  } catch {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch performance review",
-      },
-      { status: 500 }
-    );
+    const review = await getPerformanceReview(id);
+    return NextResponse.json({ ok: true, data: review });
+  } catch (e) {
+    const msg = (e as Error).message;
+    const status = msg === "invalid_id" ? 400 : 500;
+    return NextResponse.json({ ok: false, error: msg }, { status });
   }
 }
 
 // PATCH update performance review
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const updatedReview = reviewService.update(id, body);
-
-    if (!updatedReview) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Performance review not found",
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: updatedReview,
-      message: "Performance review updated successfully",
-    });
-  } catch {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to update performance review",
-      },
-      { status: 500 }
-    );
+    const updated = await updatePerformanceReview(id, body);
+    return NextResponse.json({ ok: true, data: updated });
+  } catch (e) {
+    const msg = (e as Error).message;
+    const status = msg === "invalid_id" ? 400 : 500;
+    return NextResponse.json({ ok: false, error: msg }, { status });
   }
 }
 
 // DELETE performance review
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-    const deleted = reviewService.delete(id);
-
-    if (!deleted) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Performance review not found",
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: "Performance review deleted successfully",
-    });
-  } catch {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to delete performance review",
-      },
-      { status: 500 }
-    );
+    const result = await deletePerformanceReview(id);
+    return NextResponse.json({ ok: true, data: result });
+  } catch (e) {
+    const msg = (e as Error).message;
+    const status = msg === "invalid_id" ? 400 : 500;
+    return NextResponse.json({ ok: false, error: msg }, { status });
   }
 }
