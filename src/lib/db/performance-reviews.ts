@@ -118,13 +118,30 @@ export type CreatePerformanceReviewInput = {
 export async function createPerformanceReview(
   input: CreatePerformanceReviewInput,
 ): Promise<PerformanceReview> {
-  if (
-    !required(input.employeeId) ||
-    !required(input.reviewerId) ||
-    !required(input.reviewDate) ||
-    !required(input.position)
-  ) {
+  console.log("[DB] Creating review with input:", JSON.stringify(input, null, 2));
+  
+  // Validate required fields
+  if (!required(input.employeeId)) {
+    console.error("[DB] Invalid employeeId:", input.employeeId);
     throw new Error("invalid_payload");
+  }
+  if (!required(input.reviewerId)) {
+    console.error("[DB] Invalid reviewerId:", input.reviewerId);
+    throw new Error("invalid_payload");
+  }
+  if (!required(input.reviewDate)) {
+    console.error("[DB] Invalid reviewDate:", input.reviewDate);
+    throw new Error("invalid_payload");
+  }
+  if (!required(input.position)) {
+    console.error("[DB] Invalid position:", input.position);
+    throw new Error("invalid_payload");
+  }
+
+  // Validate rating is within bounds
+  if (input.overallRating < 1 || input.overallRating > 5) {
+    console.error("[DB] Invalid rating:", input.overallRating);
+    throw new Error("Rating must be between 1 and 5");
   }
 
   const row: Partial<DbPerformanceReview> = {
@@ -133,11 +150,13 @@ export async function createPerformanceReview(
     review_date: input.reviewDate,
     overall_rating: input.overallRating,
     position: input.position,
-    strengths: input.strengths ?? null,
-    areas_for_improvement: input.areasForImprovement ?? null,
-    goals: input.goals ?? null,
+    strengths: input.strengths && input.strengths.length > 0 ? input.strengths : null,
+    areas_for_improvement: input.areasForImprovement && input.areasForImprovement.length > 0 ? input.areasForImprovement : null,
+    goals: input.goals && input.goals.length > 0 ? input.goals : null,
     comments: input.comments ?? null,
   };
+
+  console.log("[DB] Inserting row:", JSON.stringify(row, null, 2));
 
   const { data, error } = await supabase
     .from("performance_reviews")
@@ -148,13 +167,23 @@ export async function createPerformanceReview(
     `)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("[DB] Supabase error:", error);
+    throw new Error(error.message);
+  }
+  
+  console.log("[DB] Insert successful, raw data:", JSON.stringify(data, null, 2));
+  
   const result = data as any;
-  return toPerformanceReview(
+  const transformed = toPerformanceReview(
     result as DbPerformanceReview,
     result.employees?.name,
     undefined
   );
+  
+  console.log("[DB] Transformed result:", JSON.stringify(transformed, null, 2));
+  
+  return transformed;
 }
 
 // Update input type
@@ -167,7 +196,18 @@ export async function updatePerformanceReview(
   id: string,
   input: UpdatePerformanceReviewInput,
 ): Promise<PerformanceReview> {
-  if (!required(id)) throw new Error("invalid_id");
+  console.log(`[DB] Updating review ${id} with:`, JSON.stringify(input, null, 2));
+  
+  if (!required(id)) {
+    console.error("[DB] Invalid id:", id);
+    throw new Error("invalid_id");
+  }
+
+  // Validate rating if being updated
+  if (input.overallRating !== undefined && (input.overallRating < 1 || input.overallRating > 5)) {
+    console.error("[DB] Invalid rating:", input.overallRating);
+    throw new Error("Rating must be between 1 and 5");
+  }
 
   const payload: Partial<DbPerformanceReview> = {};
 
@@ -178,11 +218,14 @@ export async function updatePerformanceReview(
   if (input.overallRating !== undefined)
     payload.overall_rating = input.overallRating;
   if (input.strengths !== undefined)
-    payload.strengths = input.strengths ?? null;
+    payload.strengths = input.strengths && input.strengths.length > 0 ? input.strengths : null;
   if (input.areasForImprovement !== undefined)
-    payload.areas_for_improvement = input.areasForImprovement ?? null;
-  if (input.goals !== undefined) payload.goals = input.goals ?? null;
+    payload.areas_for_improvement = input.areasForImprovement && input.areasForImprovement.length > 0 ? input.areasForImprovement : null;
+  if (input.goals !== undefined) 
+    payload.goals = input.goals && input.goals.length > 0 ? input.goals : null;
   if (input.comments !== undefined) payload.comments = input.comments ?? null;
+  
+  console.log("[DB] Update payload:", JSON.stringify(payload, null, 2));
 
   const { data, error } = await supabase
     .from("performance_reviews")
@@ -194,13 +237,23 @@ export async function updatePerformanceReview(
     `)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("[DB] Update error:", error);
+    throw new Error(error.message);
+  }
+  
+  console.log("[DB] Update successful:", JSON.stringify(data, null, 2));
+  
   const result = data as any;
-  return toPerformanceReview(
+  const transformed = toPerformanceReview(
     result as DbPerformanceReview,
     result.employees?.name,
     undefined
   );
+  
+  console.log("[DB] Transformed update result:", JSON.stringify(transformed, null, 2));
+  
+  return transformed;
 }
 
 // Delete a performance review
