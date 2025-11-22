@@ -29,10 +29,27 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
+    
+    console.log(`[API] Updating review ${id} with:`, JSON.stringify(body, null, 2));
+    
+    // Validate rating if provided
+    if (body.overallRating !== undefined) {
+      const rating = Number(body.overallRating);
+      if (rating < 1 || rating > 5) {
+        return NextResponse.json(
+          { ok: false, error: "Rating must be between 1 and 5" },
+          { status: 400 }
+        );
+      }
+    }
+    
     const updated = await updatePerformanceReview(id, body);
+    console.log(`[API] Successfully updated review ${id}`);
+    
     return NextResponse.json({ ok: true, data: updated });
   } catch (e) {
     const msg = (e as Error).message;
+    console.error(`[API] Error updating review:`, msg, e);
     const status = msg === "invalid_id" ? 400 : 500;
     return NextResponse.json({ ok: false, error: msg }, { status });
   }

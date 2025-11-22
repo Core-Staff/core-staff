@@ -35,10 +35,47 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const created = await createPerformanceReview(body);
+    
+    // Log received data for debugging
+    console.log("[API] Received review data:", JSON.stringify(body, null, 2));
+    
+    // Validate required fields
+    if (!body.employeeId || !body.reviewerId || !body.reviewDate || !body.position) {
+      console.error("[API] Missing required fields:", {
+        hasEmployeeId: !!body.employeeId,
+        hasReviewerId: !!body.reviewerId,
+        hasReviewDate: !!body.reviewDate,
+        hasPosition: !!body.position,
+      });
+      return NextResponse.json(
+        { ok: false, error: "Missing required fields: employeeId, reviewerId, reviewDate, position" },
+        { status: 400 }
+      );
+    }
+    
+    // Transform form data to match database schema
+    const reviewInput = {
+      employeeId: body.employeeId,
+      reviewerId: body.reviewerId,
+      reviewDate: body.reviewDate,
+      overallRating: Number(body.overallRating) || 0,
+      position: body.position,
+      strengths: body.strengths || [],
+      areasForImprovement: body.areasForImprovement || [],
+      goals: body.goals || [],
+      comments: body.comments || null,
+    };
+    
+    console.log("[API] Transformed data for DB:", JSON.stringify(reviewInput, null, 2));
+    
+    const created = await createPerformanceReview(reviewInput);
+    
+    console.log("[API] Successfully created review:", created.id);
+    
     return NextResponse.json({ ok: true, data: created }, { status: 201 });
   } catch (e) {
     const msg = (e as Error).message;
+    console.error("[API] Error creating review:", msg, e);
     const status = msg === "invalid_payload" ? 400 : 500;
     return NextResponse.json({ ok: false, error: msg }, { status });
   }
