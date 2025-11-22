@@ -16,6 +16,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PerformanceReview, PerformanceMetric } from "@/types/performance";
 import { X, Plus } from "lucide-react";
 
+type ValidationError = {
+  field: string;
+  message: string;
+};
+
 type ReviewFormProps = {
   review?: PerformanceReview;
   onSubmit: (data: Omit<PerformanceReview, "id">) => void;
@@ -46,6 +51,8 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     review?.areasForImprovement || [""]
   );
   const [goals, setGoals] = useState<string[]>(review?.goals || [""]);
+  const [errors, setErrors] = useState<ValidationError[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -100,23 +107,157 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     setter((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = (): ValidationError[] => {
+    const validationErrors: ValidationError[] = [];
+
+    // Required fields validation
+    if (!formData.employeeId.trim()) {
+      validationErrors.push({
+        field: "employeeId",
+        message: "Employee ID is required",
+      });
+    }
+
+    if (!formData.reviewerId.trim()) {
+      validationErrors.push({
+        field: "reviewerId",
+        message: "Reviewer ID is required",
+      });
+    }
+
+    if (!formData.position.trim()) {
+      validationErrors.push({
+        field: "position",
+        message: "Position is required",
+      });
+    }
+
+    if (!formData.reviewDate) {
+      validationErrors.push({
+        field: "reviewDate",
+        message: "Review date is required",
+      });
+    }
+
+    // Date validation - ensure it's not in the future
+    if (formData.reviewDate) {
+      const reviewDate = new Date(formData.reviewDate);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999); // End of today
+      
+      if (reviewDate > today) {
+        validationErrors.push({
+          field: "reviewDate",
+          message: "Review date cannot be in the future",
+        });
+      }
+    }
+
+    // Overall rating validation
+    const rating = Number(formData.overallRating);
+    if (isNaN(rating) || rating < 1 || rating > 5) {
+      validationErrors.push({
+        field: "overallRating",
+        message: "Overall rating must be between 1 and 5",
+      });
+    }
+
+    // Metrics validation
+    metrics.forEach((metric, index) => {
+      if (metric.name) {
+        if (metric.rating < 0 || metric.rating > 5) {
+          validationErrors.push({
+            field: `metric-${index}-rating`,
+            message: `Metric "${metric.name}" rating must be between 0 and 5`,
+          });
+        }
+        if (metric.weight !== undefined && metric.weight <= 0) {
+          validationErrors.push({
+            field: `metric-${index}-weight`,
+            message: `Metric "${metric.name}" weight must be greater than 0`,
+          });
+        }
+      }
+    });
+
+    // Check that at least one meaningful field is filled
+    const hasStrengths = strengths.some((s) => s.trim());
+    const hasImprovements = improvements.some((i) => i.trim());
+    const hasGoals = goals.some((g) => g.trim());
+    const hasComments = formData.comments.trim();
+    const hasMetrics = metrics.some((m) => m.name);
+
+    if (!hasStrengths && !hasImprovements && !hasGoals && !hasComments && !hasMetrics) {
+      validationErrors.push({
+        field: "general",
+        message: "Please provide at least one of: strengths, areas for improvement, goals, comments, or metrics",
+      });
+    }
+
+    return validationErrors;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clear previous errors
+    setErrors([]);
+    
+    // Validate form
+    const validationErrors = validateForm();
+    
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
+      // Scroll to the first error
+      const firstErrorField = document.getElementById(validationErrors[0].field);
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+        firstErrorField.focus();
+      }
+      return;
+    }
 
-    const reviewData: Omit<PerformanceReview, "id"> = {
-      ...formData,
-      overallRating: Number(formData.overallRating),
-      metrics: metrics.filter((m) => m.name),
-      strengths: strengths.filter((s) => s.trim()),
-      areasForImprovement: improvements.filter((i) => i.trim()),
-      goals: goals.filter((g) => g.trim()),
-    };
+    setIsSubmitting(true);
 
-    onSubmit(reviewData);
+    try {
+      const reviewData: Omit<PerformanceReview, "id"> = {
+        ...formData,
+        overallRating: Number(formData.overallRating),
+        metrics: metrics.filter((m) => m.name),
+        strengths: strengths.filter((s) => s.trim()),
+        areasForImprovement: improvements.filter((i) => i.trim()),
+        goals: goals.filter((g) => g.trim()),
+      };
+
+      await onSubmit(reviewData);
+    } catch (error) {
+      setErrors([{
+        field: "general",
+        message: error instanceof Error ? error.message : "An error occurred while submitting the form",
+      }]);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getFieldError = (field: string): string | undefined => {
+    return errors.find((error) => error.field === field)?.message;
+  };
+
+  const hasGeneralError = (): string | undefined => {
+    return errors.find((error) => error.field === "general")?.message;
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* General Errors */}
+      {hasGeneralError() && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+          <p className="font-semibold">Validation Error</p>
+          <p className="text-sm">{hasGeneralError()}</p>
+        </div>
+      )}
+
       {/* Employee Information */}
       <Card>
         <CardHeader>
@@ -132,7 +273,11 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 value={formData.employeeId}
                 onChange={handleInputChange}
                 required
+                className={getFieldError("employeeId") ? "border-red-500" : ""}
               />
+              {getFieldError("employeeId") && (
+                <p className="text-sm text-red-600">{getFieldError("employeeId")}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="employeeName">Employee Name *</Label>
@@ -146,13 +291,18 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="position">Position</Label>
+            <Label htmlFor="position">Position *</Label>
             <Input
               id="position"
               name="position"
               value={formData.position}
               onChange={handleInputChange}
+              required
+              className={getFieldError("position") ? "border-red-500" : ""}
             />
+            {getFieldError("position") && (
+              <p className="text-sm text-red-600">{getFieldError("position")}</p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -172,7 +322,11 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 value={formData.reviewerId}
                 onChange={handleInputChange}
                 required
+                className={getFieldError("reviewerId") ? "border-red-500" : ""}
               />
+              {getFieldError("reviewerId") && (
+                <p className="text-sm text-red-600">{getFieldError("reviewerId")}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="reviewerName">Reviewer Name *</Label>
@@ -215,7 +369,12 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 value={formData.reviewDate}
                 onChange={handleInputChange}
                 required
+                max={new Date().toISOString().split("T")[0]}
+                className={getFieldError("reviewDate") ? "border-red-500" : ""}
               />
+              {getFieldError("reviewDate") && (
+                <p className="text-sm text-red-600">{getFieldError("reviewDate")}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
@@ -235,17 +394,22 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="overallRating">Overall Rating (0-5)</Label>
+            <Label htmlFor="overallRating">Overall Rating (1-5) *</Label>
             <Input
               id="overallRating"
               name="overallRating"
               type="number"
-              min="0"
+              min="1"
               max="5"
               step="0.1"
               value={formData.overallRating}
               onChange={handleInputChange}
+              required
+              className={getFieldError("overallRating") ? "border-red-500" : ""}
             />
+            {getFieldError("overallRating") && (
+              <p className="text-sm text-red-600">{getFieldError("overallRating")}</p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -440,11 +604,11 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
 
       {/* Form Actions */}
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button type="submit">
-          {review ? "Update Review" : "Create Review"}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : review ? "Update Review" : "Create Review"}
         </Button>
       </div>
     </form>
