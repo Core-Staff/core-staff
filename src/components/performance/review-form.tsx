@@ -21,6 +21,21 @@ type ValidationError = {
   message: string;
 };
 
+// UUID validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Date validation (YYYY-MM-DD format)
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+// Helper functions
+const isValidUUID = (value: string): boolean => UUID_REGEX.test(value.trim());
+const isValidDate = (value: string): boolean => {
+  if (!DATE_REGEX.test(value)) return false;
+  const date = new Date(value);
+  return !isNaN(date.getTime());
+};
+const isWhitespaceOnly = (value: string): boolean => value.trim().length === 0;
+
 type ReviewFormProps = {
   review?: PerformanceReview;
   onSubmit: (data: Omit<PerformanceReview, "id">) => void;
@@ -110,37 +125,58 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
   const validateForm = (): ValidationError[] => {
     const validationErrors: ValidationError[] = [];
 
-    // Required fields validation
-    if (!formData.employeeId.trim()) {
+    // Employee ID validation
+    if (!formData.employeeId || isWhitespaceOnly(formData.employeeId)) {
       validationErrors.push({
         field: "employeeId",
         message: "Employee ID is required",
       });
+    } else if (!isValidUUID(formData.employeeId)) {
+      validationErrors.push({
+        field: "employeeId",
+        message: "Employee ID must be a valid UUID (e.g., 914771d2-2ae0-47ed-b50c-b1285b5925e2)",
+      });
     }
 
-    if (!formData.reviewerId.trim()) {
+    // Reviewer ID validation
+    if (!formData.reviewerId || isWhitespaceOnly(formData.reviewerId)) {
       validationErrors.push({
         field: "reviewerId",
         message: "Reviewer ID is required",
       });
-    }
-
-    if (!formData.position.trim()) {
+    } else if (!isValidUUID(formData.reviewerId)) {
       validationErrors.push({
-        field: "position",
-        message: "Position is required",
+        field: "reviewerId",
+        message: "Reviewer ID must be a valid UUID (e.g., b5a6780b-70c1-421b-934a-539379777e6a)",
       });
     }
 
+    // Position validation
+    if (!formData.position || isWhitespaceOnly(formData.position)) {
+      validationErrors.push({
+        field: "position",
+        message: "Position is required and cannot be only whitespace",
+      });
+    } else if (formData.position.trim().length < 2) {
+      validationErrors.push({
+        field: "position",
+        message: "Position must be at least 2 characters long",
+      });
+    }
+
+    // Review date validation
     if (!formData.reviewDate) {
       validationErrors.push({
         field: "reviewDate",
         message: "Review date is required",
       });
-    }
-
-    // Date validation - ensure it's not in the future
-    if (formData.reviewDate) {
+    } else if (!isValidDate(formData.reviewDate)) {
+      validationErrors.push({
+        field: "reviewDate",
+        message: "Review date must be in YYYY-MM-DD format",
+      });
+    } else {
+      // Check if date is not in the future
       const reviewDate = new Date(formData.reviewDate);
       const today = new Date();
       today.setHours(23, 59, 59, 999); // End of today
@@ -151,11 +187,38 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
           message: "Review date cannot be in the future",
         });
       }
+      
+      // Check if date is not too old (e.g., more than 5 years ago)
+      const fiveYearsAgo = new Date();
+      fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+      if (reviewDate < fiveYearsAgo) {
+        validationErrors.push({
+          field: "reviewDate",
+          message: "Review date cannot be more than 5 years in the past",
+        });
+      }
     }
 
-    // Overall rating validation
+    // Overall rating validation (must be INTEGER between 1-5)
+    const ratingStr = String(formData.overallRating);
     const rating = Number(formData.overallRating);
-    if (isNaN(rating) || rating < 1 || rating > 5) {
+    
+    if (!ratingStr || ratingStr.trim() === "") {
+      validationErrors.push({
+        field: "overallRating",
+        message: "Overall rating is required",
+      });
+    } else if (isNaN(rating)) {
+      validationErrors.push({
+        field: "overallRating",
+        message: "Overall rating must be a valid number",
+      });
+    } else if (!Number.isInteger(rating)) {
+      validationErrors.push({
+        field: "overallRating",
+        message: "Overall rating must be a whole number (integers only: 1, 2, 3, 4, or 5)",
+      });
+    } else if (rating < 1 || rating > 5) {
       validationErrors.push({
         field: "overallRating",
         message: "Overall rating must be between 1 and 5",
@@ -164,19 +227,58 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
 
     // Metrics validation
     metrics.forEach((metric, index) => {
-      if (metric.name) {
+      if (metric.name && metric.name.trim()) {
+        // Validate metric name length
+        if (metric.name.trim().length < 2) {
+          validationErrors.push({
+            field: `metric-${index}-name`,
+            message: `Metric name must be at least 2 characters long`,
+          });
+        }
+        
+        // Validate metric rating
         if (metric.rating < 0 || metric.rating > 5) {
           validationErrors.push({
             field: `metric-${index}-rating`,
             message: `Metric "${metric.name}" rating must be between 0 and 5`,
           });
         }
+        
+        // Validate metric weight
         if (metric.weight !== undefined && metric.weight <= 0) {
           validationErrors.push({
             field: `metric-${index}-weight`,
             message: `Metric "${metric.name}" weight must be greater than 0`,
           });
         }
+      }
+    });
+    
+    // Validate array items for minimum length
+    strengths.forEach((strength, index) => {
+      if (strength.trim() && strength.trim().length < 3) {
+        validationErrors.push({
+          field: `strength-${index}`,
+          message: "Strength must be at least 3 characters long",
+        });
+      }
+    });
+    
+    improvements.forEach((improvement, index) => {
+      if (improvement.trim() && improvement.trim().length < 3) {
+        validationErrors.push({
+          field: `improvement-${index}`,
+          message: "Area for improvement must be at least 3 characters long",
+        });
+      }
+    });
+    
+    goals.forEach((goal, index) => {
+      if (goal.trim() && goal.trim().length < 3) {
+        validationErrors.push({
+          field: `goal-${index}`,
+          message: "Goal must be at least 3 characters long",
+        });
       }
     });
 
@@ -220,13 +322,24 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     setIsSubmitting(true);
 
     try {
+      // Trim all string values before submission
       const reviewData: Omit<PerformanceReview, "id"> = {
         ...formData,
+        employeeId: formData.employeeId.trim(),
+        reviewerId: formData.reviewerId.trim(),
+        position: formData.position.trim(),
         overallRating: Number(formData.overallRating),
-        metrics: metrics.filter((m) => m.name),
-        strengths: strengths.filter((s) => s.trim()),
-        areasForImprovement: improvements.filter((i) => i.trim()),
-        goals: goals.filter((g) => g.trim()),
+        metrics: metrics
+          .filter((m) => m.name && m.name.trim())
+          .map((m) => ({
+            ...m,
+            name: m.name.trim(),
+            comments: m.comments?.trim() || "",
+          })),
+        strengths: strengths.filter((s) => s.trim()).map((s) => s.trim()),
+        areasForImprovement: improvements.filter((i) => i.trim()).map((i) => i.trim()),
+        goals: goals.filter((g) => g.trim()).map((g) => g.trim()),
+        comments: formData.comments?.trim() || undefined,
       };
 
       await onSubmit(reviewData);
@@ -272,9 +385,11 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 name="employeeId"
                 value={formData.employeeId}
                 onChange={handleInputChange}
+                placeholder="e.g., 914771d2-2ae0-47ed-b50c-b1285b5925e2"
                 required
                 className={getFieldError("employeeId") ? "border-red-500" : ""}
               />
+              <p className="text-xs text-gray-600">Must be a valid UUID format</p>
               {getFieldError("employeeId") && (
                 <p className="text-sm text-red-600">{getFieldError("employeeId")}</p>
               )}
@@ -321,9 +436,11 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 name="reviewerId"
                 value={formData.reviewerId}
                 onChange={handleInputChange}
+                placeholder="e.g., b5a6780b-70c1-421b-934a-539379777e6a"
                 required
                 className={getFieldError("reviewerId") ? "border-red-500" : ""}
               />
+              <p className="text-xs text-gray-600">Must be a valid UUID format</p>
               {getFieldError("reviewerId") && (
                 <p className="text-sm text-red-600">{getFieldError("reviewerId")}</p>
               )}
@@ -401,12 +518,13 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
               type="number"
               min="1"
               max="5"
-              step="0.1"
+              step="1"
               value={formData.overallRating}
               onChange={handleInputChange}
               required
               className={getFieldError("overallRating") ? "border-red-500" : ""}
             />
+            <p className="text-xs text-gray-600">Must be a whole number (1, 2, 3, 4, or 5)</p>
             {getFieldError("overallRating") && (
               <p className="text-sm text-red-600">{getFieldError("overallRating")}</p>
             )}
