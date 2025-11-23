@@ -40,15 +40,16 @@ export async function POST(request: NextRequest) {
     console.log("[API] Received review data:", JSON.stringify(body, null, 2));
     
     // Validate required fields
-    if (!body.employeeId || !body.reviewerId || !body.reviewDate || !body.position) {
+    if (!body.employeeId || !body.employeeName || !body.reviewerId || !body.reviewerName || !body.reviewDate) {
       console.error("[API] Missing required fields:", {
         hasEmployeeId: !!body.employeeId,
+        hasEmployeeName: !!body.employeeName,
         hasReviewerId: !!body.reviewerId,
+        hasReviewerName: !!body.reviewerName,
         hasReviewDate: !!body.reviewDate,
-        hasPosition: !!body.position,
       });
       return NextResponse.json(
-        { ok: false, error: "Missing required fields: employeeId, reviewerId, reviewDate, position" },
+        { ok: false, error: "Missing required fields: employeeId, employeeName, reviewerId, reviewerName, reviewDate" },
         { status: 400 }
       );
     }
@@ -56,14 +57,18 @@ export async function POST(request: NextRequest) {
     // Transform form data to match database schema
     const reviewInput = {
       employeeId: body.employeeId,
+      employeeName: body.employeeName,
       reviewerId: body.reviewerId,
+      reviewerName: body.reviewerName,
       reviewDate: body.reviewDate,
-      overallRating: Number(body.overallRating) || 0,
-      position: body.position,
+      overallRating: Number(body.overallRating) || 1,
+      position: body.position || undefined,
+      period: body.period || undefined,
+      status: body.status || "completed",
       strengths: body.strengths || [],
       areasForImprovement: body.areasForImprovement || [],
       goals: body.goals || [],
-      comments: body.comments || null,
+      comments: body.comments || undefined,
     };
     
     console.log("[API] Transformed data for DB:", JSON.stringify(reviewInput, null, 2));

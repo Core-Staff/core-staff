@@ -5,10 +5,14 @@ import type { PerformanceReview, PerformanceMetric } from "@/types/performance";
 export type DbPerformanceReview = {
   id: string;
   employee_id: string;
+  employee_name: string;
   reviewer_id: string;
+  reviewer_name: string;
+  position?: string | null;
+  period?: string | null;
   review_date: string;
+  status: string;
   overall_rating: number;
-  position: string;
   strengths?: string[] | null;
   areas_for_improvement?: string[] | null;
   goals?: string[] | null;
@@ -18,21 +22,18 @@ export type DbPerformanceReview = {
 };
 
 // Convert database row to app type (snake_case -> camelCase)
-// Note: employeeName, reviewerName, period, status, metrics need to be joined/computed separately
 export const toPerformanceReview = (
   row: DbPerformanceReview,
-  employeeName?: string,
-  reviewerName?: string,
 ): PerformanceReview => ({
   id: row.id,
   employeeId: row.employee_id,
-  employeeName: employeeName || "Unknown",
-  position: row.position,
+  employeeName: row.employee_name,
+  position: row.position ?? undefined,
   reviewerId: row.reviewer_id,
-  reviewerName: reviewerName || "Unknown",
-  period: "", // Not in DB, needs to be computed or passed
+  reviewerName: row.reviewer_name,
+  period: row.period ?? "",
   reviewDate: row.review_date,
-  status: "completed", // Not in DB, default to completed
+  status: row.status as "draft" | "pending" | "in-progress" | "completed",
   overallRating: row.overall_rating,
   strengths: row.strengths ?? undefined,
   areasForImprovement: row.areas_for_improvement ?? undefined,
@@ -52,10 +53,7 @@ export async function listPerformanceReviews(filters?: {
 }): Promise<PerformanceReview[]> {
   let query = supabase
     .from("performance_reviews")
-    .select(`
-      *,
-      employees!employee_id(name)
-    `)
+    .select("*")
     .order("review_date", { ascending: false });
 
   if (filters?.employeeId) {
@@ -68,13 +66,7 @@ export async function listPerformanceReviews(filters?: {
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   
-  return (data as any[]).map((row) =>
-    toPerformanceReview(
-      row as DbPerformanceReview,
-      row.employees?.name,
-      undefined // reviewerName would need another join
-    )
-  );
+  return (data as DbPerformanceReview[]).map((row) => toPerformanceReview(row));
 }
 
 // Get a single performance review by ID
@@ -85,29 +77,25 @@ export async function getPerformanceReview(
 
   const { data, error } = await supabase
     .from("performance_reviews")
-    .select(`
-      *,
-      employees!employee_id(name)
-    `)
+    .select("*")
     .eq("id", id)
     .single();
 
   if (error) throw new Error(error.message);
-  const row = data as any;
-  return toPerformanceReview(
-    row as DbPerformanceReview,
-    row.employees?.name,
-    undefined
-  );
+  return toPerformanceReview(data as DbPerformanceReview);
 }
 
 // Create input type
 export type CreatePerformanceReviewInput = {
   employeeId: string;
+  employeeName: string;
   reviewerId: string;
+  reviewerName: string;
   reviewDate: string;
   overallRating: number;
-  position: string;
+  position?: string;
+  period?: string;
+  status?: "draft" | "pending" | "in-progress" | "completed";
   strengths?: string[];
   areasForImprovement?: string[];
   goals?: string[];
@@ -125,16 +113,20 @@ export async function createPerformanceReview(
     console.error("[DB] Invalid employeeId:", input.employeeId);
     throw new Error("invalid_payload");
   }
+  if (!required(input.employeeName)) {
+    console.error("[DB] Invalid employeeName:", input.employeeName);
+    throw new Error("invalid_payload");
+  }
   if (!required(input.reviewerId)) {
     console.error("[DB] Invalid reviewerId:", input.reviewerId);
     throw new Error("invalid_payload");
   }
-  if (!required(input.reviewDate)) {
-    console.error("[DB] Invalid reviewDate:", input.reviewDate);
+  if (!required(input.reviewerName)) {
+    console.error("[DB] Invalid reviewerName:", input.reviewerName);
     throw new Error("invalid_payload");
   }
-  if (!required(input.position)) {
-    console.error("[DB] Invalid position:", input.position);
+  if (!required(input.reviewDate)) {
+    console.error("[DB] Invalid reviewDate:", input.reviewDate);
     throw new Error("invalid_payload");
   }
 
@@ -146,10 +138,14 @@ export async function createPerformanceReview(
 
   const row: Partial<DbPerformanceReview> = {
     employee_id: input.employeeId,
+    employee_name: input.employeeName,
     reviewer_id: input.reviewerId,
+    reviewer_name: input.reviewerName,
     review_date: input.reviewDate,
     overall_rating: input.overallRating,
-    position: input.position,
+    position: input.position ?? null,
+    period: input.period ?? null,
+    status: input.status ?? "completed",
     strengths: input.strengths && input.strengths.length > 0 ? input.strengths : null,
     areas_for_improvement: input.areasForImprovement && input.areasForImprovement.length > 0 ? input.areasForImprovement : null,
     goals: input.goals && input.goals.length > 0 ? input.goals : null,
@@ -161,10 +157,7 @@ export async function createPerformanceReview(
   const { data, error } = await supabase
     .from("performance_reviews")
     .insert([row])
-    .select(`
-      *,
-      employees!employee_id(name)
-    `)
+    .select("*")
     .single();
 
   if (error) {
@@ -174,12 +167,7 @@ export async function createPerformanceReview(
   
   console.log("[DB] Insert successful, raw data:", JSON.stringify(data, null, 2));
   
-  const result = data as any;
-  const transformed = toPerformanceReview(
-    result as DbPerformanceReview,
-    result.employees?.name,
-    undefined
-  );
+  const transformed = toPerformanceReview(data as DbPerformanceReview);
   
   console.log("[DB] Transformed result:", JSON.stringify(transformed, null, 2));
   
@@ -212,9 +200,13 @@ export async function updatePerformanceReview(
   const payload: Partial<DbPerformanceReview> = {};
 
   if (input.employeeId !== undefined) payload.employee_id = input.employeeId;
-  if (input.position !== undefined) payload.position = input.position;
+  if (input.employeeName !== undefined) payload.employee_name = input.employeeName;
   if (input.reviewerId !== undefined) payload.reviewer_id = input.reviewerId;
+  if (input.reviewerName !== undefined) payload.reviewer_name = input.reviewerName;
+  if (input.position !== undefined) payload.position = input.position ?? null;
+  if (input.period !== undefined) payload.period = input.period ?? null;
   if (input.reviewDate !== undefined) payload.review_date = input.reviewDate;
+  if (input.status !== undefined) payload.status = input.status;
   if (input.overallRating !== undefined)
     payload.overall_rating = input.overallRating;
   if (input.strengths !== undefined)
@@ -231,10 +223,7 @@ export async function updatePerformanceReview(
     .from("performance_reviews")
     .update(payload)
     .eq("id", id)
-    .select(`
-      *,
-      employees!employee_id(name)
-    `)
+    .select("*")
     .single();
 
   if (error) {
@@ -244,12 +233,7 @@ export async function updatePerformanceReview(
   
   console.log("[DB] Update successful:", JSON.stringify(data, null, 2));
   
-  const result = data as any;
-  const transformed = toPerformanceReview(
-    result as DbPerformanceReview,
-    result.employees?.name,
-    undefined
-  );
+  const transformed = toPerformanceReview(data as DbPerformanceReview);
   
   console.log("[DB] Transformed update result:", JSON.stringify(transformed, null, 2));
   
