@@ -1,14 +1,51 @@
+"use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PerformanceHeader, ReviewCard, GoalCard, StatCard } from "@/components/performance";
-import { performanceReviews, goals } from "@/lib/data/performance-data";
+import {
+  PerformanceHeader,
+  ReviewCard,
+  GoalCard,
+  StatCard,
+} from "@/components/performance";
+import { goals } from "@/lib/data/performance-data";
 import { FileText, Target, TrendingUp, Users } from "lucide-react";
+import { reviewsApi } from "@/lib/api/performance";
+import { useEffect, useState } from "react";
+import { PerformanceReview } from "@/types/performance";
 
 export default function PerformancePage() {
-  const pendingReviews = performanceReviews.filter(r => r.status === "pending").length;
-  const activeGoals = goals.filter(g => g.status === "in-progress").length;
-  const completedGoals = goals.filter(g => g.status === "completed").length;
+  const [performanceReviews, setPerformanceReviews] = useState<
+    PerformanceReview[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      const reviewsResponse = await reviewsApi.list();
+      if (reviewsResponse.ok && reviewsResponse.data) {
+        setPerformanceReviews(reviewsResponse.data);
+      }
+      setLoading(false);
+    }
+    fetchReviews();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  const pendingReviews = performanceReviews.filter(
+    (r) => r.status === "pending",
+  ).length;
+  const activeGoals = goals.filter((g) => g.status === "in-progress").length;
+  const completedGoals = goals.filter((g) => g.status === "completed").length;
   const totalGoals = goals.length;
-  const goalCompletionRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
+  const goalCompletionRate =
+    totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
   return (
     <div className="flex min-h-screen flex-col gap-8 p-8">
