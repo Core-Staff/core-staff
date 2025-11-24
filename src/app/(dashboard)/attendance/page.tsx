@@ -1,4 +1,5 @@
 import { AttendanceHeader } from "@/components/attendance/attendance-header";
+import { Suspense } from "react";
 import { AttendanceList } from "@/components/attendance/attendance-list";
 import { AttendanceStats } from "@/components/attendance/attendance-stats";
 import type {
@@ -20,7 +21,12 @@ export default async function AttendancePage({
   const q = (sp.q ?? "").trim();
   const dept = (sp.dept ?? "").trim();
   const status = sp.status;
-  const logs: AttendanceLog[] = await listAttendanceLogs({ q, dept, status });
+  let logs: AttendanceLog[] = [];
+  try {
+    logs = await listAttendanceLogs({ q, dept, status });
+  } catch {
+    logs = [];
+  }
   const now = new Date();
   const stats: AttendanceStatsType = {
     openNow: logs.filter((l) => l.status === "open").length,
@@ -48,7 +54,9 @@ export default async function AttendancePage({
 
   return (
     <div className="flex min-h-screen flex-col gap-8 p-8">
-      <AttendanceHeader />
+      <Suspense>
+        <AttendanceHeader />
+      </Suspense>
       <AttendanceStats stats={stats} />
       <AttendanceList logs={logs} />
     </div>

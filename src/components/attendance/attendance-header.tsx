@@ -43,7 +43,6 @@ export function AttendanceHeader() {
     setQuery(searchParams.get("q") ?? "");
     setDept(searchParams.get("dept") ?? "");
     setStatus(searchParams.get("status") ?? "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {
