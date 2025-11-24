@@ -9,9 +9,34 @@ type ApiResponse<T> = {
   error?: string;
 };
 
+// Helper to get base URL for server-side calls
+const getBaseUrl = () => {
+  if (typeof window === 'undefined') {
+    // Server-side
+    return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  }
+  // Client-side
+  return '';
+};
+
 // Reviews API
 export const reviewsApi = {
   // Get all reviews with optional filters
+  list: async (filters?: {
+    employeeId?: string;
+    reviewerId?: string;
+  }): Promise<ApiResponse<PerformanceReview[]>> => {
+    const params = new URLSearchParams();
+    if (filters?.employeeId) params.append("employeeId", filters.employeeId);
+    if (filters?.reviewerId) params.append("reviewerId", filters.reviewerId);
+
+    const baseUrl = getBaseUrl();
+    const url = `${baseUrl}${API_BASE}/reviews${params.toString() ? `?${params}` : ''}`;
+    const response = await fetch(url, { cache: 'no-store' });
+    return response.json();
+  },
+
+  // Get all reviews with optional filters (alias for list)
   getAll: async (filters?: {
     status?: string;
     employeeId?: string;
@@ -22,7 +47,9 @@ export const reviewsApi = {
     if (filters?.employeeId) params.append("employeeId", filters.employeeId);
     if (filters?.period) params.append("period", filters.period);
 
-    const response = await fetch(`${API_BASE}/reviews?${params}`);
+    const baseUrl = getBaseUrl();
+    const url = `${baseUrl}${API_BASE}/reviews${params.toString() ? `?${params}` : ''}`;
+    const response = await fetch(url, { cache: 'no-store' });
     return response.json();
   },
 
