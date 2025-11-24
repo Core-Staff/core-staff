@@ -20,7 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { listEmployees } from "@/lib/db/employees";
+import type { Employee } from "@/types/employee";
 
 export function AttendanceHeader() {
   const router = useRouter();
@@ -47,10 +47,26 @@ export function AttendanceHeader() {
 
   useEffect(() => {
     (async () => {
-      const list = await listEmployees();
-      setEmployees(
-        list.map((e) => ({ id: e.id, name: e.name, department: e.department })),
-      );
+      try {
+        const res = await fetch("/api/employees?status=active", {
+          cache: "no-store",
+        });
+        const json = await res.json();
+        if (json && json.ok && Array.isArray(json.data)) {
+          const list = json.data as Employee[];
+          setEmployees(
+            list.map((e) => ({
+              id: e.id,
+              name: e.name,
+              department: e.department,
+            })),
+          );
+        } else {
+          setEmployees([]);
+        }
+      } catch {
+        setEmployees([]);
+      }
     })();
   }, []);
 
@@ -83,8 +99,13 @@ export function AttendanceHeader() {
   };
 
   const onStatusChange = (v: string) => {
-    setStatus(v);
-    updateUrl({ status: v });
+    if (v === "all") {
+      setStatus("");
+      updateUrl({ status: "" });
+    } else {
+      setStatus(v);
+      updateUrl({ status: v });
+    }
   };
 
   const validateClockIn = () => {
@@ -105,8 +126,6 @@ export function AttendanceHeader() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           employeeId: selected.id,
-          employeeName: selected.name,
-          department: selected.department,
         }),
       });
       const json = await res.json();
@@ -160,7 +179,7 @@ export function AttendanceHeader() {
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All</SelectItem>
+            <SelectItem value="all">All</SelectItem>
             <SelectItem value="open">Open</SelectItem>
             <SelectItem value="closed">Closed</SelectItem>
           </SelectContent>
