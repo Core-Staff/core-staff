@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { deleteEmployee, updateEmployee } from "@/lib/db/employees";
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },

@@ -126,7 +126,7 @@ export class PerformanceReviewService {
   }
 
   // Validate required fields for creation
-  validateCreate(data: any): { valid: boolean; errors: string[] } {
+  validateCreate(data: Partial<PerformanceReview>): { valid: boolean; errors: string[] } {
     const requiredFields = [
       "employeeId",
       "employeeName",
@@ -134,12 +134,12 @@ export class PerformanceReviewService {
       "reviewerName",
       "period",
       "reviewDate",
-    ];
+    ] as const;
 
     const errors: string[] = [];
 
     for (const field of requiredFields) {
-      if (!data[field]) {
+      if (!data[field as keyof PerformanceReview]) {
         errors.push(`Missing required field: ${field}`);
       }
     }
@@ -265,12 +265,12 @@ export class GoalService {
   }
 
   // Validate required fields for creation
-  validateCreate(data: any): { valid: boolean; errors: string[] } {
-    const requiredFields = ["employeeId", "title", "description", "deadline"];
+  validateCreate(data: Partial<Goal>): { valid: boolean; errors: string[] } {
+    const requiredFields = ["employeeId", "title", "description", "deadline"] as const;
     const errors: string[] = [];
 
     for (const field of requiredFields) {
-      if (!data[field]) {
+      if (!data[field as keyof Goal]) {
         errors.push(`Missing required field: ${field}`);
       }
     }

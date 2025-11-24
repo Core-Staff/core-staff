@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoalService } from "@/lib/services/PerformanceService";
 
+export const dynamic = 'force-dynamic';
+
 const goalService = new GoalService();
 
 // GET all goals

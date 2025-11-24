@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PerformanceStatsService } from "@/lib/services/PerformanceService";
 
+export const dynamic = 'force-dynamic';
+
 const statsService = new PerformanceStatsService();
 
 // GET performance statistics

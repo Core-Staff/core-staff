@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/data/supabase";
-import type { PerformanceReview, PerformanceMetric } from "@/types/performance";
+import type { PerformanceReview } from "@/types/performance";
 
 // Database schema type (snake_case matching Supabase)
 export type DbPerformanceReview = {
