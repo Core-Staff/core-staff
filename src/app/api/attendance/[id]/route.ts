@@ -1,14 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { clockOutLog } from "@/lib/db/attendance";
+import { clockOutLog, updateAttendanceLog } from "@/lib/db/attendance";
 
 export async function PUT(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await context.params;
-    const updated = await clockOutLog(id);
+    let updated;
+    try {
+      const body = await request.json();
+      if (
+        body &&
+        ("clockIn" in body || "clockOut" in body || "status" in body)
+      ) {
+        updated = await updateAttendanceLog(id, body);
+      } else {
+        updated = await clockOutLog(id);
+      }
+    } catch {
+      updated = await clockOutLog(id);
+    }
     return NextResponse.json({ ok: true, data: updated });
   } catch (e) {
     return NextResponse.json(
