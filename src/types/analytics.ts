@@ -36,15 +36,7 @@ export interface TopPerformer {
   avatar?: string;
 }
 
-export interface LeaveRequest {
-  id: string;
-  employeeName: string;
-  department: string;
-  type: string;
-  startDate: string;
-  endDate: string;
-  status: "pending" | "approved" | "rejected";
-}
+
 
 export interface RecentActivity {
   id: string;
