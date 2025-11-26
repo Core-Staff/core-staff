@@ -7,6 +7,8 @@ interface FormFieldProps {
   type?: string;
   placeholder?: string;
   required?: boolean;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function FormField({
@@ -15,6 +17,8 @@ export function FormField({
   type = "text",
   placeholder,
   required = false,
+  value,
+  onChange,
 }: FormFieldProps) {
   return (
     <div className="space-y-2">
@@ -27,6 +31,8 @@ export function FormField({
         type={type}
         placeholder={placeholder}
         required={required}
+        value={value}
+        onChange={onChange}
       />
     </div>
   );
