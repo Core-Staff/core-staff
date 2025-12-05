@@ -1,9 +1,10 @@
 import { AnalyticsHeader } from "@/components/analytics/analytics-header";
 import { LeaveRequestsTable } from "@/components/analytics/leave-requests-table";
 import { listLeaveRequests } from "@/lib/data/leave-requests";
+import { LeaveRequest } from "@/types/leaveRequest";
 
 export default async function LeaveRequestsPage() {
-  let requests = [];
+  let requests: LeaveRequest[] = [];
   try {
     requests = await listLeaveRequests();
   } catch (err) {
