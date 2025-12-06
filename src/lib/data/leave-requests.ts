@@ -46,7 +46,7 @@ export async function listLeaveRequests(filters?: {
   const rows = (data as DbLeaveRequest[]) || [];
 
   const employeeIds = Array.from(new Set(rows.map((r) => r.employeeId).filter(Boolean)));
-  let employeesMap: Record<string, DbEmployeePartial> = {};
+  const employeesMap: Record<string, DbEmployeePartial> = {};
 
   if (employeeIds.length > 0) {
     const { data: empData, error: empErr } = await supabase
@@ -146,10 +146,9 @@ export async function updateLeaveRequest(
   if (!required(id)) throw new Error("invalid_id");
 
   const payload: Partial<DbLeaveRequest> = {};
-  if ((input as any).employeeId !== undefined)
-    (payload as any).employeeId = (input as any).employeeId;
-  if (input.startDate !== undefined) payload.startDate = input.startDate as string;
-  if (input.endDate !== undefined) payload.endDate = input.endDate as string | null;
+  if (input.employeeId !== undefined) payload.employeeId = input.employeeId;
+  if (input.startDate !== undefined) payload.startDate = input.startDate;
+  if (input.endDate !== undefined) payload.endDate = input.endDate;
   if (input.status !== undefined) payload.status = input.status as DbLeaveRequest["status"];
 
   const { data, error } = await supabase

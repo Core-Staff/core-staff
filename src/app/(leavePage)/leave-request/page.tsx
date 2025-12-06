@@ -50,8 +50,9 @@ export default function EmployeeLeaveRequestPage() {
       // animate to form: set step after a short delay so animation is visible
       // (we keep it immediate for snappy UX)
       setStep("form");
-    } catch (err: any) {
-      setError(err?.message ?? "Unexpected error");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unexpected error";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -86,8 +87,9 @@ export default function EmployeeLeaveRequestPage() {
         return;
       }
       setStep("done");
-    } catch (err: any) {
-      setError(err?.message ?? "Unexpected error");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unexpected error";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -126,7 +128,7 @@ export default function EmployeeLeaveRequestPage() {
               {step === "email" && (
                 <form onSubmit={lookupEmail} className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Enter your work email to start a leave request. If your email exists in our system you'll be able to continue.
+                    Enter your work email to start a leave request. If your email exists in our system you&apos;ll be able to continue.
                   </p>
 
                   <div>

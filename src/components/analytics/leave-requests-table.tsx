@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LeaveRequest } from "@/types/leaveRequest";
@@ -125,14 +125,14 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
               ...r,
               startDate: editingValues.startDate ?? r.startDate,
               endDate: editingValues.endDate ?? r.endDate,
-              status: (editingValues.status as any) ?? r.status,
+              status: editingValues.status ?? r.status,
             }
           : r
       )
     );
 
     try {
-      const payload: any = {};
+      const payload: Partial<Pick<LeaveRequest, "startDate" | "endDate" | "status">> = {};
       if (editingValues.startDate) payload.startDate = editingValues.startDate;
       if (editingValues.endDate !== undefined) payload.endDate = editingValues.endDate || null;
       if (editingValues.status) payload.status = editingValues.status;
@@ -162,9 +162,8 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
   const setEditingField = (field: keyof typeof editingValues, value: string) => {
     setEditingValues((s) => ({ ...(s ?? {}), [field]: value }));
   };
-
-  const now = new Date();
   const filteredSorted = React.useMemo(() => {
+    const now = new Date();
     let list = [...localRequests];
 
     if (hideApproved) list = list.filter((r) => r.status !== "approved");
@@ -188,7 +187,7 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
     });
 
     return list;
-  }, [localRequests, hideApproved, hideRejected, lastDays, sortAsc, now]);
+  }, [localRequests, hideApproved, hideRejected, lastDays, sortAsc]);
 
   return (
     <Card>

@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { updateLeaveRequest } from "@/lib/data/leave-requests";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   try {
     const body = await req.json();
     if (!body || !body.status) {
@@ -10,8 +10,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
     const updated = await updateLeaveRequest(id, { status: body.status });
     return NextResponse.json(updated);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Failed to update leave request:", err);
-    return NextResponse.json({ error: err?.message ?? "unknown_error" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "unknown_error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
