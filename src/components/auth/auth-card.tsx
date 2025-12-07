@@ -22,7 +22,7 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
           <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary">
             <Building2 className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold">Core Staff</h1>
+          <h1 className="text-2xl font-bold">Effeciency</h1>
           <p className="text-sm text-muted-foreground">
             HR Management Platform
           </p>

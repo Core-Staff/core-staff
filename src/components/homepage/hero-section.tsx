@@ -28,8 +28,8 @@ export function HeroSection() {
         {/* Animated top badge */}
         <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-gradient-to-r from-primary/10 to-accent/10 px-4 py-1.5 backdrop-blur-md shadow-lg hover:shadow-xl hover:border-primary/50 transition-all cursor-pointer group">
           <Sparkles className="h-3.5 w-3.5 text-primary group-hover:animate-spin" />
-          <span className="text-sm font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Welcome to Core Staff
+          <span className="text-sm font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            Welcome to Effeciency
           </span>
         </div>
 

@@ -1,6 +1,6 @@
 # Authentication Components
 
-A comprehensive set of modular authentication UI components built with shadcn/ui for the Core Staff platform.
+A comprehensive set of modular authentication UI components built with shadcn/ui for the Effeciency platform.
 
 ## Components Overview
 

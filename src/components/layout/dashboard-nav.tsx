@@ -44,7 +44,7 @@ export function DashboardNav() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <Building2 className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold">Core Staff</span>
+          <span className="text-xl font-bold">Effeciency</span>
         </Link>
 
         {/* Navigation */}

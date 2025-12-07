@@ -5,7 +5,7 @@ export default function LoginPage() {
   return (
     <AuthCard
       title="Welcome back"
-      description="Sign in to your Core Staff account to continue"
+      description="Sign in to your Effeciency account to continue"
     >
       <LoginForm />
     </AuthCard>
