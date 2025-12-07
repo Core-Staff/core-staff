@@ -17,7 +17,10 @@ export type User = {
 };
 
 // Create a new user
-export async function createUser(email: string, password: string): Promise<{ ok: boolean; data?: User; error?: string }> {
+export async function createUser(
+  email: string,
+  password: string,
+): Promise<{ ok: boolean; data?: User; error?: string }> {
   try {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,7 +42,9 @@ export async function createUser(email: string, password: string): Promise<{ ok:
 }
 
 // Find user by email
-export async function findUserByEmail(email: string): Promise<{ ok: boolean; data?: DbUser; error?: string }> {
+export async function findUserByEmail(
+  email: string,
+): Promise<{ ok: boolean; data?: DbUser; error?: string }> {
   try {
     const { data, error } = await supabase
       .from("Users")
@@ -48,7 +53,7 @@ export async function findUserByEmail(email: string): Promise<{ ok: boolean; dat
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         // No rows returned - user not found
         return { ok: false, error: "User not found" };
       }
@@ -62,7 +67,10 @@ export async function findUserByEmail(email: string): Promise<{ ok: boolean; dat
 }
 
 // Verify user credentials
-export async function verifyCredentials(email: string, password: string): Promise<{ ok: boolean; data?: User; error?: string }> {
+export async function verifyCredentials(
+  email: string,
+  password: string,
+): Promise<{ ok: boolean; data?: User; error?: string }> {
   try {
     const userResult = await findUserByEmail(email);
 
@@ -71,7 +79,10 @@ export async function verifyCredentials(email: string, password: string): Promis
     }
 
     // Compare passwords
-    const isValid = await bcrypt.compare(password, userResult.data.hashed_password);
+    const isValid = await bcrypt.compare(
+      password,
+      userResult.data.hashed_password,
+    );
 
     if (!isValid) {
       return { ok: false, error: "Invalid email or password" };

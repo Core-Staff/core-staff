@@ -2,10 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, Clock, TrendingUp, BarChart3, UserRoundX } from "lucide-react";
+import { Users, Clock, TrendingUp, BarChart3, UserRoundX } from "lucide-react";
 
 const navItems = [
+  {
+    title: "Reports",
+    href: "/reports",
+    icon: BarChart3,
+  },
   {
     title: "Employees",
     href: "/employees",
@@ -22,11 +28,6 @@ const navItems = [
     icon: TrendingUp,
   },
   {
-    title: "Reports",
-    href: "/reports",
-    icon: BarChart3,
-  },
-  {
     title: "Leave Requests",
     href: "/leaveRequests",
     icon: UserRoundX,
@@ -37,38 +38,48 @@ export function DashboardNav() {
   const pathname = usePathname();
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <Building2 className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold">Effeciency</span>
+    <aside className="flex h-screen w-64 flex-col border-r bg-background">
+      <div className="flex h-16 items-center px-4">
+        <Link href="/" className="flex h-10 items-center">
+          <Image
+            src="/brand/logo_color.svg"
+            alt="Effeciency"
+            width={120}
+            height={28}
+            className="dark:hidden h-7 w-auto"
+            priority
+          />
+          <Image
+            src="/brand/logo_white.svg"
+            alt="Effeciency"
+            width={120}
+            height={28}
+            className="hidden dark:block h-7 w-auto"
+            priority
+          />
         </Link>
-
-        {/* Navigation */}
-        <nav className="flex items-center space-x-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-
-            return (
-              <Button
-                key={item.href}
-                variant={isActive ? "default" : "ghost"}
-                size="sm"
-                asChild
-              >
-                <Link href={item.href} className="flex items-center space-x-2">
-                  <Icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </Button>
-            );
-          })}
-        </nav>
       </div>
-    </header>
+      <nav className="flex-1 space-y-1 px-2 py-2">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+
+          return (
+            <Button
+              key={item.href}
+              variant={isActive ? "secondary" : "ghost"}
+              size="sm"
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href={item.href} className="flex items-center space-x-2">
+                <Icon className="h-4 w-4" />
+                <span>{item.title}</span>
+              </Link>
+            </Button>
+          );
+        })}
+      </nav>
+    </aside>
   );
 }

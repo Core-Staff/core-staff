@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LeaveRequest } from "@/types/leaveRequest";
-import { Calendar, MoreHorizontal, Check, X, Edit2, Save, XCircle } from "lucide-react";
+import {
+  Calendar,
+  MoreHorizontal,
+  Check,
+  X,
+  Edit2,
+  Save,
+  XCircle,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +28,11 @@ interface LeaveRequestsTableProps {
 
 export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
   const [localRequests, setLocalRequests] = React.useState<LeaveRequest[]>(
-    () => requests ?? []
+    () => requests ?? [],
   );
-  const [loadingIds, setLoadingIds] = React.useState<Record<string, boolean>>({});
+  const [loadingIds, setLoadingIds] = React.useState<Record<string, boolean>>(
+    {},
+  );
   const [hideApproved, setHideApproved] = React.useState(false);
   const [hideRejected, setHideRejected] = React.useState(false);
   const [sortAsc, setSortAsc] = React.useState(false);
@@ -74,7 +84,9 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
 
   const updateStatus = async (id: string, status: "approved" | "rejected") => {
     setLoadingIds((s) => ({ ...s, [id]: true }));
-    setLocalRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    setLocalRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status } : r)),
+    );
     try {
       const res = await fetch(`/api/leave-requests/${id}`, {
         method: "PATCH",
@@ -90,7 +102,7 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
     } catch (err) {
       console.error("Failed to update status:", err);
       setLocalRequests((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status: "pending" } : r))
+        prev.map((r) => (r.id === id ? { ...r, status: "pending" } : r)),
       );
     } finally {
       setLoadingIds((s) => {
@@ -127,14 +139,17 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
               endDate: editingValues.endDate ?? r.endDate,
               status: editingValues.status ?? r.status,
             }
-          : r
-      )
+          : r,
+      ),
     );
 
     try {
-      const payload: Partial<Pick<LeaveRequest, "startDate" | "endDate" | "status">> = {};
+      const payload: Partial<
+        Pick<LeaveRequest, "startDate" | "endDate" | "status">
+      > = {};
       if (editingValues.startDate) payload.startDate = editingValues.startDate;
-      if (editingValues.endDate !== undefined) payload.endDate = editingValues.endDate || null;
+      if (editingValues.endDate !== undefined)
+        payload.endDate = editingValues.endDate || null;
       if (editingValues.status) payload.status = editingValues.status;
       const res = await fetch(`/api/leave-requests/${id}`, {
         method: "PATCH",
@@ -159,7 +174,10 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
     }
   };
 
-  const setEditingField = (field: keyof typeof editingValues, value: string) => {
+  const setEditingField = (
+    field: keyof typeof editingValues,
+    value: string,
+  ) => {
     setEditingValues((s) => ({ ...(s ?? {}), [field]: value }));
   };
   const filteredSorted = React.useMemo(() => {
@@ -273,7 +291,9 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatDate(request.startDate)} -{" "}
-                    {request.endDate ? formatDate(request.endDate) : "End date: unsure"}
+                    {request.endDate
+                      ? formatDate(request.endDate)
+                      : "End date: unsure"}
                   </p>
                 </div>
 
@@ -281,8 +301,12 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
                   {isEditing ? (
                     <>
                       <select
-                        value={(editingValues.status ?? request.status) as string}
-                        onChange={(e) => setEditingField("status", e.target.value)}
+                        value={
+                          (editingValues.status ?? request.status) as string
+                        }
+                        onChange={(e) =>
+                          setEditingField("status", e.target.value)
+                        }
                         disabled={isLoading}
                         className="rounded border px-2 py-1 text-sm"
                       >
@@ -331,14 +355,18 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => updateStatus(request.id, "approved")}
+                              onClick={() =>
+                                updateStatus(request.id, "approved")
+                              }
                               disabled={isLoading}
                             >
                               <Check className="mr-2 h-4 w-4" />
                               Accept
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => updateStatus(request.id, "rejected")}
+                              onClick={() =>
+                                updateStatus(request.id, "rejected")
+                              }
                               disabled={isLoading}
                             >
                               <X className="mr-2 h-4 w-4" />
@@ -365,7 +393,9 @@ export function LeaveRequestsTable({ requests }: LeaveRequestsTableProps) {
           })}
 
           {filteredSorted.length === 0 && (
-            <div className="text-sm text-muted-foreground">No leave requests</div>
+            <div className="text-sm text-muted-foreground">
+              No leave requests
+            </div>
           )}
         </div>
       </CardContent>

@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Effeciency",
   description: "Effeciency Application",
+  icons: {
+    icon: "/brand/icon_color.svg",
+    shortcut: "/brand/icon_color.svg",
+    apple: "/brand/icon_color.svg",
+  },
 };
 
 export default function RootLayout({

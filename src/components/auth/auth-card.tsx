@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Building2 } from "lucide-react";
+import Image from "next/image";
 
 interface AuthCardProps {
   title: string;
@@ -17,11 +17,23 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
-        {/* Logo/Branding */}
         <div className="flex flex-col items-center space-y-2">
-          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary">
-            <Building2 className="h-8 w-8 text-primary-foreground" />
-          </div>
+          <Image
+            src="/brand/icon_color.svg"
+            alt="Effeciency"
+            width={64}
+            height={64}
+            className="dark:hidden"
+            priority
+          />
+          <Image
+            src="/brand/icon_white.svg"
+            alt="Effeciency"
+            width={64}
+            height={64}
+            className="hidden dark:block"
+            priority
+          />
           <h1 className="text-2xl font-bold">Effeciency</h1>
           <p className="text-sm text-muted-foreground">
             HR Management Platform

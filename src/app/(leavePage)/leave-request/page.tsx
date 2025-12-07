@@ -11,7 +11,11 @@ export default function EmployeeLeaveRequestPage() {
   const [email, setEmail] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
-  const [employee, setEmployee] = React.useState<{ id: string; name?: string; department?: string } | null>(null);
+  const [employee, setEmployee] = React.useState<{
+    id: string;
+    name?: string;
+    department?: string;
+  } | null>(null);
   const [startDate, setStartDate] = React.useState<string>(() => {
     const d = new Date();
     const yyyy = d.getFullYear();
@@ -128,7 +132,8 @@ export default function EmployeeLeaveRequestPage() {
               {step === "email" && (
                 <form onSubmit={lookupEmail} className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Enter your work email to start a leave request. If your email exists in our system you&apos;ll be able to continue.
+                    Enter your work email to start a leave request. If your
+                    email exists in our system you&apos;ll be able to continue.
                   </p>
 
                   <div>
@@ -142,7 +147,9 @@ export default function EmployeeLeaveRequestPage() {
                     />
                   </div>
 
-                  {error && <div className="text-sm text-destructive">{error}</div>}
+                  {error && (
+                    <div className="text-sm text-destructive">{error}</div>
+                  )}
 
                   <div className="flex items-center gap-2">
                     <Button type="submit" disabled={loading}>
@@ -163,11 +170,17 @@ export default function EmployeeLeaveRequestPage() {
                     <p className="text-sm">
                       Submitting as: <strong>{employee.name ?? email}</strong>
                     </p>
-                    {employee.department && <p className="text-sm text-muted-foreground">Department: {employee.department}</p>}
+                    {employee.department && (
+                      <p className="text-sm text-muted-foreground">
+                        Department: {employee.department}
+                      </p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium">Start date</label>
+                    <label className="block text-sm font-medium">
+                      Start date
+                    </label>
                     <input
                       type="date"
                       value={startDate}
@@ -178,7 +191,9 @@ export default function EmployeeLeaveRequestPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium">End date (optional)</label>
+                    <label className="block text-sm font-medium">
+                      End date (optional)
+                    </label>
                     <input
                       type="date"
                       value={endDate}
@@ -187,7 +202,9 @@ export default function EmployeeLeaveRequestPage() {
                     />
                   </div>
 
-                  {error && <div className="text-sm text-destructive">{error}</div>}
+                  {error && (
+                    <div className="text-sm text-destructive">{error}</div>
+                  )}
 
                   <div className="flex items-center gap-2">
                     <Button type="submit" disabled={loading}>
@@ -214,7 +231,10 @@ export default function EmployeeLeaveRequestPage() {
             >
               {step === "done" && (
                 <div className="space-y-4">
-                  <p className="text-sm">Your leave request was submitted successfully and is pending approval.</p>
+                  <p className="text-sm">
+                    Your leave request was submitted successfully and is pending
+                    approval.
+                  </p>
                   <div className="flex gap-2">
                     <Button onClick={() => router.push("/")}>Done</Button>
                   </div>

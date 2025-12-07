@@ -11,12 +11,12 @@ type ApiResponse<T> = {
 
 // Helper to get base URL for server-side calls
 const getBaseUrl = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     // Server-side
-    return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   }
   // Client-side
-  return '';
+  return "";
 };
 
 // Reviews API
@@ -31,8 +31,8 @@ export const reviewsApi = {
     if (filters?.reviewerId) params.append("reviewerId", filters.reviewerId);
 
     const baseUrl = getBaseUrl();
-    const url = `${baseUrl}${API_BASE}/reviews${params.toString() ? `?${params}` : ''}`;
-    const response = await fetch(url, { cache: 'no-store' });
+    const url = `${baseUrl}${API_BASE}/reviews${params.toString() ? `?${params}` : ""}`;
+    const response = await fetch(url, { cache: "no-store" });
     return response.json();
   },
 
@@ -48,8 +48,8 @@ export const reviewsApi = {
     if (filters?.period) params.append("period", filters.period);
 
     const baseUrl = getBaseUrl();
-    const url = `${baseUrl}${API_BASE}/reviews${params.toString() ? `?${params}` : ''}`;
-    const response = await fetch(url, { cache: 'no-store' });
+    const url = `${baseUrl}${API_BASE}/reviews${params.toString() ? `?${params}` : ""}`;
+    const response = await fetch(url, { cache: "no-store" });
     return response.json();
   },
 

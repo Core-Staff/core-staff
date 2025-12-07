@@ -65,7 +65,7 @@ export async function listPerformanceReviews(filters?: {
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
-  
+
   return (data as DbPerformanceReview[]).map((row) => toPerformanceReview(row));
 }
 
@@ -106,8 +106,11 @@ export type CreatePerformanceReviewInput = {
 export async function createPerformanceReview(
   input: CreatePerformanceReviewInput,
 ): Promise<PerformanceReview> {
-  console.log("[DB] Creating review with input:", JSON.stringify(input, null, 2));
-  
+  console.log(
+    "[DB] Creating review with input:",
+    JSON.stringify(input, null, 2),
+  );
+
   // Validate required fields
   if (!required(input.employeeId)) {
     console.error("[DB] Invalid employeeId:", input.employeeId);
@@ -146,8 +149,12 @@ export async function createPerformanceReview(
     position: input.position ?? null,
     period: input.period ?? null,
     status: input.status ?? "completed",
-    strengths: input.strengths && input.strengths.length > 0 ? input.strengths : null,
-    areas_for_improvement: input.areasForImprovement && input.areasForImprovement.length > 0 ? input.areasForImprovement : null,
+    strengths:
+      input.strengths && input.strengths.length > 0 ? input.strengths : null,
+    areas_for_improvement:
+      input.areasForImprovement && input.areasForImprovement.length > 0
+        ? input.areasForImprovement
+        : null,
     goals: input.goals && input.goals.length > 0 ? input.goals : null,
     comments: input.comments ?? null,
   };
@@ -164,13 +171,16 @@ export async function createPerformanceReview(
     console.error("[DB] Supabase error:", error);
     throw new Error(error.message);
   }
-  
-  console.log("[DB] Insert successful, raw data:", JSON.stringify(data, null, 2));
-  
+
+  console.log(
+    "[DB] Insert successful, raw data:",
+    JSON.stringify(data, null, 2),
+  );
+
   const transformed = toPerformanceReview(data as DbPerformanceReview);
-  
+
   console.log("[DB] Transformed result:", JSON.stringify(transformed, null, 2));
-  
+
   return transformed;
 }
 
@@ -184,15 +194,21 @@ export async function updatePerformanceReview(
   id: string,
   input: UpdatePerformanceReviewInput,
 ): Promise<PerformanceReview> {
-  console.log(`[DB] Updating review ${id} with:`, JSON.stringify(input, null, 2));
-  
+  console.log(
+    `[DB] Updating review ${id} with:`,
+    JSON.stringify(input, null, 2),
+  );
+
   if (!required(id)) {
     console.error("[DB] Invalid id:", id);
     throw new Error("invalid_id");
   }
 
   // Validate rating if being updated
-  if (input.overallRating !== undefined && (input.overallRating < 1 || input.overallRating > 5)) {
+  if (
+    input.overallRating !== undefined &&
+    (input.overallRating < 1 || input.overallRating > 5)
+  ) {
     console.error("[DB] Invalid rating:", input.overallRating);
     throw new Error("Rating must be between 1 and 5");
   }
@@ -200,9 +216,11 @@ export async function updatePerformanceReview(
   const payload: Partial<DbPerformanceReview> = {};
 
   if (input.employeeId !== undefined) payload.employee_id = input.employeeId;
-  if (input.employeeName !== undefined) payload.employee_name = input.employeeName;
+  if (input.employeeName !== undefined)
+    payload.employee_name = input.employeeName;
   if (input.reviewerId !== undefined) payload.reviewer_id = input.reviewerId;
-  if (input.reviewerName !== undefined) payload.reviewer_name = input.reviewerName;
+  if (input.reviewerName !== undefined)
+    payload.reviewer_name = input.reviewerName;
   if (input.position !== undefined) payload.position = input.position ?? null;
   if (input.period !== undefined) payload.period = input.period ?? null;
   if (input.reviewDate !== undefined) payload.review_date = input.reviewDate;
@@ -210,13 +228,17 @@ export async function updatePerformanceReview(
   if (input.overallRating !== undefined)
     payload.overall_rating = input.overallRating;
   if (input.strengths !== undefined)
-    payload.strengths = input.strengths && input.strengths.length > 0 ? input.strengths : null;
+    payload.strengths =
+      input.strengths && input.strengths.length > 0 ? input.strengths : null;
   if (input.areasForImprovement !== undefined)
-    payload.areas_for_improvement = input.areasForImprovement && input.areasForImprovement.length > 0 ? input.areasForImprovement : null;
-  if (input.goals !== undefined) 
+    payload.areas_for_improvement =
+      input.areasForImprovement && input.areasForImprovement.length > 0
+        ? input.areasForImprovement
+        : null;
+  if (input.goals !== undefined)
     payload.goals = input.goals && input.goals.length > 0 ? input.goals : null;
   if (input.comments !== undefined) payload.comments = input.comments ?? null;
-  
+
   console.log("[DB] Update payload:", JSON.stringify(payload, null, 2));
 
   const { data, error } = await supabase
@@ -230,13 +252,16 @@ export async function updatePerformanceReview(
     console.error("[DB] Update error:", error);
     throw new Error(error.message);
   }
-  
+
   console.log("[DB] Update successful:", JSON.stringify(data, null, 2));
-  
+
   const transformed = toPerformanceReview(data as DbPerformanceReview);
-  
-  console.log("[DB] Transformed update result:", JSON.stringify(transformed, null, 2));
-  
+
+  console.log(
+    "[DB] Transformed update result:",
+    JSON.stringify(transformed, null, 2),
+  );
+
   return transformed;
 }
 

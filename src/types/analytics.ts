@@ -36,8 +36,6 @@ export interface TopPerformer {
   avatar?: string;
 }
 
-
-
 export interface RecentActivity {
   id: string;
   type: string;

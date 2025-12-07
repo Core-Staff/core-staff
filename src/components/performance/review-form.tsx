@@ -22,7 +22,8 @@ type ValidationError = {
 };
 
 // UUID validation regex
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Date validation (YYYY-MM-DD format)
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
@@ -57,20 +58,20 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
   });
 
   const [metrics, setMetrics] = useState<PerformanceMetric[]>(
-    review?.metrics || []
+    review?.metrics || [],
   );
   const [strengths, setStrengths] = useState<string[]>(
-    review?.strengths || [""]
+    review?.strengths || [""],
   );
   const [improvements, setImprovements] = useState<string[]>(
-    review?.areasForImprovement || [""]
+    review?.areasForImprovement || [""],
   );
   const [goals, setGoals] = useState<string[]>(review?.goals || [""]);
   const [errors, setErrors] = useState<ValidationError[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -81,13 +82,14 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
   };
 
   const addMetric = () => {
-    setMetrics([
-      ...metrics,
-      { name: "", rating: 0, weight: 1, comments: "" },
-    ]);
+    setMetrics([...metrics, { name: "", rating: 0, weight: 1, comments: "" }]);
   };
 
-  const updateMetric = (index: number, field: keyof PerformanceMetric, value: string | number) => {
+  const updateMetric = (
+    index: number,
+    field: keyof PerformanceMetric,
+    value: string | number,
+  ) => {
     const updated = [...metrics];
     updated[index] = { ...updated[index], [field]: value };
     setMetrics(updated);
@@ -97,16 +99,14 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     setMetrics(metrics.filter((_, i) => i !== index));
   };
 
-  const addItem = (
-    setter: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
+  const addItem = (setter: React.Dispatch<React.SetStateAction<string[]>>) => {
     setter((prev) => [...prev, ""]);
   };
 
   const updateItem = (
     index: number,
     value: string,
-    setter: React.Dispatch<React.SetStateAction<string[]>>
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
   ) => {
     setter((prev) => {
       const updated = [...prev];
@@ -117,7 +117,7 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
 
   const removeItem = (
     index: number,
-    setter: React.Dispatch<React.SetStateAction<string[]>>
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
   ) => {
     setter((prev) => prev.filter((_, i) => i !== index));
   };
@@ -134,7 +134,8 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     } else if (!isValidUUID(formData.employeeId)) {
       validationErrors.push({
         field: "employeeId",
-        message: "Employee ID must be a valid UUID (e.g., 914771d2-2ae0-47ed-b50c-b1285b5925e2)",
+        message:
+          "Employee ID must be a valid UUID (e.g., 914771d2-2ae0-47ed-b50c-b1285b5925e2)",
       });
     }
 
@@ -147,7 +148,8 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     } else if (!isValidUUID(formData.reviewerId)) {
       validationErrors.push({
         field: "reviewerId",
-        message: "Reviewer ID must be a valid UUID (e.g., b5a6780b-70c1-421b-934a-539379777e6a)",
+        message:
+          "Reviewer ID must be a valid UUID (e.g., b5a6780b-70c1-421b-934a-539379777e6a)",
       });
     }
 
@@ -180,14 +182,14 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
       const reviewDate = new Date(formData.reviewDate);
       const today = new Date();
       today.setHours(23, 59, 59, 999); // End of today
-      
+
       if (reviewDate > today) {
         validationErrors.push({
           field: "reviewDate",
           message: "Review date cannot be in the future",
         });
       }
-      
+
       // Check if date is not too old (e.g., more than 5 years ago)
       const fiveYearsAgo = new Date();
       fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
@@ -202,7 +204,7 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     // Overall rating validation (must be INTEGER between 1-5)
     const ratingStr = String(formData.overallRating);
     const rating = Number(formData.overallRating);
-    
+
     if (!ratingStr || ratingStr.trim() === "") {
       validationErrors.push({
         field: "overallRating",
@@ -216,7 +218,8 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     } else if (!Number.isInteger(rating)) {
       validationErrors.push({
         field: "overallRating",
-        message: "Overall rating must be a whole number (integers only: 1, 2, 3, 4, or 5)",
+        message:
+          "Overall rating must be a whole number (integers only: 1, 2, 3, 4, or 5)",
       });
     } else if (rating < 1 || rating > 5) {
       validationErrors.push({
@@ -235,7 +238,7 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
             message: `Metric name must be at least 2 characters long`,
           });
         }
-        
+
         // Validate metric rating
         if (metric.rating < 0 || metric.rating > 5) {
           validationErrors.push({
@@ -243,7 +246,7 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
             message: `Metric "${metric.name}" rating must be between 0 and 5`,
           });
         }
-        
+
         // Validate metric weight
         if (metric.weight !== undefined && metric.weight <= 0) {
           validationErrors.push({
@@ -253,7 +256,7 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
         }
       }
     });
-    
+
     // Validate array items for minimum length
     strengths.forEach((strength, index) => {
       if (strength.trim() && strength.trim().length < 3) {
@@ -263,7 +266,7 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
         });
       }
     });
-    
+
     improvements.forEach((improvement, index) => {
       if (improvement.trim() && improvement.trim().length < 3) {
         validationErrors.push({
@@ -272,7 +275,7 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
         });
       }
     });
-    
+
     goals.forEach((goal, index) => {
       if (goal.trim() && goal.trim().length < 3) {
         validationErrors.push({
@@ -289,10 +292,17 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
     const hasComments = formData.comments.trim();
     const hasMetrics = metrics.some((m) => m.name);
 
-    if (!hasStrengths && !hasImprovements && !hasGoals && !hasComments && !hasMetrics) {
+    if (
+      !hasStrengths &&
+      !hasImprovements &&
+      !hasGoals &&
+      !hasComments &&
+      !hasMetrics
+    ) {
       validationErrors.push({
         field: "general",
-        message: "Please provide at least one of: strengths, areas for improvement, goals, comments, or metrics",
+        message:
+          "Please provide at least one of: strengths, areas for improvement, goals, comments, or metrics",
       });
     }
 
@@ -301,17 +311,19 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Clear previous errors
     setErrors([]);
-    
+
     // Validate form
     const validationErrors = validateForm();
-    
+
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
       // Scroll to the first error
-      const firstErrorField = document.getElementById(validationErrors[0].field);
+      const firstErrorField = document.getElementById(
+        validationErrors[0].field,
+      );
       if (firstErrorField) {
         firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
         firstErrorField.focus();
@@ -337,17 +349,24 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
             comments: m.comments?.trim() || "",
           })),
         strengths: strengths.filter((s) => s.trim()).map((s) => s.trim()),
-        areasForImprovement: improvements.filter((i) => i.trim()).map((i) => i.trim()),
+        areasForImprovement: improvements
+          .filter((i) => i.trim())
+          .map((i) => i.trim()),
         goals: goals.filter((g) => g.trim()).map((g) => g.trim()),
         comments: formData.comments?.trim() || undefined,
       };
 
       await onSubmit(reviewData);
     } catch (error) {
-      setErrors([{
-        field: "general",
-        message: error instanceof Error ? error.message : "An error occurred while submitting the form",
-      }]);
+      setErrors([
+        {
+          field: "general",
+          message:
+            error instanceof Error
+              ? error.message
+              : "An error occurred while submitting the form",
+        },
+      ]);
     } finally {
       setIsSubmitting(false);
     }
@@ -389,9 +408,13 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 required
                 className={getFieldError("employeeId") ? "border-red-500" : ""}
               />
-              <p className="text-xs text-gray-600">Must be a valid UUID format</p>
+              <p className="text-xs text-gray-600">
+                Must be a valid UUID format
+              </p>
               {getFieldError("employeeId") && (
-                <p className="text-sm text-red-600">{getFieldError("employeeId")}</p>
+                <p className="text-sm text-red-600">
+                  {getFieldError("employeeId")}
+                </p>
               )}
             </div>
             <div className="space-y-2">
@@ -416,7 +439,9 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
               className={getFieldError("position") ? "border-red-500" : ""}
             />
             {getFieldError("position") && (
-              <p className="text-sm text-red-600">{getFieldError("position")}</p>
+              <p className="text-sm text-red-600">
+                {getFieldError("position")}
+              </p>
             )}
           </div>
         </CardContent>
@@ -440,9 +465,13 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 required
                 className={getFieldError("reviewerId") ? "border-red-500" : ""}
               />
-              <p className="text-xs text-gray-600">Must be a valid UUID format</p>
+              <p className="text-xs text-gray-600">
+                Must be a valid UUID format
+              </p>
               {getFieldError("reviewerId") && (
-                <p className="text-sm text-red-600">{getFieldError("reviewerId")}</p>
+                <p className="text-sm text-red-600">
+                  {getFieldError("reviewerId")}
+                </p>
               )}
             </div>
             <div className="space-y-2">
@@ -490,7 +519,9 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                 className={getFieldError("reviewDate") ? "border-red-500" : ""}
               />
               {getFieldError("reviewDate") && (
-                <p className="text-sm text-red-600">{getFieldError("reviewDate")}</p>
+                <p className="text-sm text-red-600">
+                  {getFieldError("reviewDate")}
+                </p>
               )}
             </div>
             <div className="space-y-2">
@@ -524,9 +555,13 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
               required
               className={getFieldError("overallRating") ? "border-red-500" : ""}
             />
-            <p className="text-xs text-gray-600">Must be a whole number (1, 2, 3, 4, or 5)</p>
+            <p className="text-xs text-gray-600">
+              Must be a whole number (1, 2, 3, 4, or 5)
+            </p>
             {getFieldError("overallRating") && (
-              <p className="text-sm text-red-600">{getFieldError("overallRating")}</p>
+              <p className="text-sm text-red-600">
+                {getFieldError("overallRating")}
+              </p>
             )}
           </div>
         </CardContent>
@@ -549,7 +584,9 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
                   <Input
                     placeholder="Metric name"
                     value={metric.name}
-                    onChange={(e) => updateMetric(index, "name", e.target.value)}
+                    onChange={(e) =>
+                      updateMetric(index, "name", e.target.value)
+                    }
                   />
                   <div className="grid grid-cols-2 gap-2">
                     <Input
@@ -617,7 +654,9 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
               <Input
                 placeholder="Enter a strength"
                 value={strength}
-                onChange={(e) => updateItem(index, e.target.value, setStrengths)}
+                onChange={(e) =>
+                  updateItem(index, e.target.value, setStrengths)
+                }
               />
               <Button
                 type="button"
@@ -722,11 +761,20 @@ export function ReviewForm({ review, onSubmit, onCancel }: ReviewFormProps) {
 
       {/* Form Actions */}
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : review ? "Update Review" : "Create Review"}
+          {isSubmitting
+            ? "Submitting..."
+            : review
+              ? "Update Review"
+              : "Create Review"}
         </Button>
       </div>
     </form>

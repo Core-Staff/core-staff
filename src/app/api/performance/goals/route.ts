@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoalService } from "@/lib/services/PerformanceService";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const goalService = new GoalService();
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch goals",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: validation.errors.join(", "),
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         data: newGoal,
         message: "Goal created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch {
     return NextResponse.json(
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: "Failed to create goal",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

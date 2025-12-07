@@ -45,7 +45,9 @@ export async function listLeaveRequests(filters?: {
 
   const rows = (data as DbLeaveRequest[]) || [];
 
-  const employeeIds = Array.from(new Set(rows.map((r) => r.employeeId).filter(Boolean)));
+  const employeeIds = Array.from(
+    new Set(rows.map((r) => r.employeeId).filter(Boolean)),
+  );
   const employeesMap: Record<string, DbEmployeePartial> = {};
 
   if (employeeIds.length > 0) {
@@ -55,9 +57,12 @@ export async function listLeaveRequests(filters?: {
       .in("id", employeeIds);
 
     if (empErr) {
-      console.warn("Failed to fetch employees for leave requests:", empErr.message);
+      console.warn(
+        "Failed to fetch employees for leave requests:",
+        empErr.message,
+      );
     } else if (empData) {
-      for (const e of (empData as DbEmployeePartial[])) {
+      for (const e of empData as DbEmployeePartial[]) {
         employeesMap[e.id] = e;
       }
     }
@@ -87,7 +92,7 @@ export type CreateLeaveRequestInput = {
 };
 
 export async function createLeaveRequest(
-  input: CreateLeaveRequestInput
+  input: CreateLeaveRequestInput,
 ): Promise<LeaveRequest> {
   if (!required(input.employeeId) || !required(input.startDate)) {
     throw new Error("invalid_payload");
@@ -141,7 +146,7 @@ export type UpdateLeaveRequestInput = Partial<
 
 export async function updateLeaveRequest(
   id: string,
-  input: UpdateLeaveRequestInput
+  input: UpdateLeaveRequestInput,
 ): Promise<LeaveRequest> {
   if (!required(id)) throw new Error("invalid_id");
 
@@ -149,7 +154,8 @@ export async function updateLeaveRequest(
   if (input.employeeId !== undefined) payload.employeeId = input.employeeId;
   if (input.startDate !== undefined) payload.startDate = input.startDate;
   if (input.endDate !== undefined) payload.endDate = input.endDate;
-  if (input.status !== undefined) payload.status = input.status as DbLeaveRequest["status"];
+  if (input.status !== undefined)
+    payload.status = input.status as DbLeaveRequest["status"];
 
   const { data, error } = await supabase
     .from("leaveRequests")

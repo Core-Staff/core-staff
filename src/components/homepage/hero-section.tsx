@@ -1,17 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  Users,
-  Calendar,
-  BarChart3,
-  Clock,
-  CheckCircle,
-  Zap,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Users, Calendar, BarChart3, Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function HeroSection() {
   return (
@@ -23,8 +15,25 @@ export function HeroSection() {
         <div className="absolute top-1/2 right-1/3 h-60 w-60 rounded-full bg-secondary/5 blur-3xl opacity-40" />
       </div>
 
-      {/* Main Content */}
       <div className="relative flex flex-col items-center justify-center min-h-screen w-full px-4 pt-20 pb-12 sm:px-6 lg:px-8">
+        <div className="mb-6">
+          <Image
+            src="/brand/icon_color.svg"
+            alt="Effeciency"
+            width={64}
+            height={64}
+            className="dark:hidden"
+            priority
+          />
+          <Image
+            src="/brand/icon_white.svg"
+            alt="Effeciency"
+            width={64}
+            height={64}
+            className="hidden dark:block"
+            priority
+          />
+        </div>
         {/* Animated top badge */}
         <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-gradient-to-r from-primary/10 to-accent/10 px-4 py-1.5 backdrop-blur-md shadow-lg hover:shadow-xl hover:border-primary/50 transition-all cursor-pointer group">
           <Sparkles className="h-3.5 w-3.5 text-primary group-hover:animate-spin" />
@@ -43,14 +52,17 @@ export function HeroSection() {
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl leading-relaxed">
-            Streamline employee management, leave requests, and analytics all in one
-            powerful platform designed for modern teams.
+            Streamline employee management, leave requests, and analytics all in
+            one powerful platform designed for modern teams.
           </p>
 
           {/* Enhanced CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center sm:gap-4 pt-6">
             <Link href="/login">
-              <Button size="lg" className="w-full sm:w-auto gap-2 bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 transition-all group">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto gap-2 bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 transition-all group"
+              >
                 Sign In
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -103,7 +115,11 @@ export function HeroSection() {
           </p>
           <div className="flex flex-col items-center gap-4">
             <Link href="/reports">
-              <Button variant="outline" size="lg" className="gap-2 border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all group">
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2 border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all group"
+              >
                 View Analytics Dashboard
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -126,12 +142,12 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
     <div className="group relative overflow-hidden rounded-2xl">
       {/* Animated gradient border */}
       <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 via-primary/25 to-accent/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur" />
-      
+
       {/* Card background with enhanced gradient */}
       <div className="relative bg-gradient-to-br from-card via-card to-card/80 backdrop-blur-xl border border-border/40 rounded-2xl p-8 h-full transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-2xl">
         {/* Inner gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-2xl pointer-events-none" />
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col gap-4">
           <div className="inline-flex w-fit rounded-xl bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10 p-4 group-hover:from-primary/40 group-hover:via-primary/30 group-hover:to-primary/20 transition-all duration-300 shadow-lg group-hover:shadow-xl">

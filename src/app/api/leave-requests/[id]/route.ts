@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateLeaveRequest } from "@/lib/data/leave-requests";
 
-export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
+) {
   const { id } = await context.params;
   try {
     const body = await req.json();

@@ -24,7 +24,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: empErr.message }, { status: 500 });
     }
     if (!emp) {
-      return NextResponse.json({ error: "employee_not_found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "employee_not_found" },
+        { status: 404 },
+      );
     }
 
     // Create leave request (status defaults to pending)

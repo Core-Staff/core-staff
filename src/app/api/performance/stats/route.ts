@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PerformanceStatsService } from "@/lib/services/PerformanceService";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const statsService = new PerformanceStatsService();
 
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch performance statistics",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

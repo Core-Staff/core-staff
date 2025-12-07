@@ -13,7 +13,13 @@ interface StatCardProps {
   iconColor?: string;
 }
 
-export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-primary" }: StatCardProps) {
+export function StatCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  iconColor = "text-primary",
+}: StatCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -24,8 +30,11 @@ export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-pr
         <div className="text-2xl font-bold">{value}</div>
         {trend && (
           <p className="text-xs text-muted-foreground">
-            <span className={trend.isPositive ? "text-green-600" : "text-red-600"}>
-              {trend.isPositive ? "+" : ""}{trend.value}%
+            <span
+              className={trend.isPositive ? "text-green-600" : "text-red-600"}
+            >
+              {trend.isPositive ? "+" : ""}
+              {trend.value}%
             </span>{" "}
             from last period
           </p>

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoalService } from "@/lib/services/PerformanceService";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const goalService = new GoalService();
 
 // GET single goal by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -20,7 +20,7 @@ export async function GET(
           success: false,
           error: "Goal not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function GET(
         success: false,
         error: "Failed to fetch goal",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -42,7 +42,7 @@ export async function GET(
 // PATCH update goal
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -55,7 +55,7 @@ export async function PATCH(
           success: false,
           error: "Goal not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -70,7 +70,7 @@ export async function PATCH(
         success: false,
         error: "Failed to update goal",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -78,7 +78,7 @@ export async function PATCH(
 // DELETE goal
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -90,7 +90,7 @@ export async function DELETE(
           success: false,
           error: "Goal not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -104,7 +104,7 @@ export async function DELETE(
         success: false,
         error: "Failed to delete goal",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

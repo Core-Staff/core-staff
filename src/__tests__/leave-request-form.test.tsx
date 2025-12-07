@@ -34,7 +34,7 @@ describe("EmployeeLeaveRequestPage - Email Step", () => {
   it("should update email state on user input", async () => {
     render(<EmployeeLeaveRequestPage />);
     const emailInput = screen.getByDisplayValue("") as HTMLInputElement;
-    
+
     await userEvent.type(emailInput, "test@example.com");
     expect(emailInput.value).toBe("test@example.com");
   });
@@ -43,7 +43,11 @@ describe("EmployeeLeaveRequestPage - Email Step", () => {
     global.fetch = jest.fn().mockResolvedValueOnce({
       status: 200,
       ok: true,
-      json: async () => ({ id: "1", name: "John Doe", department: "Engineering" }),
+      json: async () => ({
+        id: "1",
+        name: "John Doe",
+        department: "Engineering",
+      }),
     });
 
     render(<EmployeeLeaveRequestPage />);
@@ -60,7 +64,7 @@ describe("EmployeeLeaveRequestPage - Email Step", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: "test@example.com" }),
-        })
+        }),
       );
     });
   });
@@ -79,7 +83,9 @@ describe("EmployeeLeaveRequestPage - Email Step", () => {
     await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("No employee found with that email.")).toBeInTheDocument();
+      expect(
+        screen.getByText("No employee found with that email."),
+      ).toBeInTheDocument();
     });
   });
 
@@ -113,9 +119,9 @@ describe("EmployeeLeaveRequestPage - Email Step", () => {
                 ok: true,
                 json: async () => ({ id: "1", name: "John Doe" }),
               }),
-            100
-          )
-        )
+            100,
+          ),
+        ),
     );
 
     render(<EmployeeLeaveRequestPage />);
@@ -125,10 +131,14 @@ describe("EmployeeLeaveRequestPage - Email Step", () => {
     await userEvent.type(emailInput, "test@example.com");
     await userEvent.click(submitButton);
 
-    expect(screen.getByRole("button", { name: /checking/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /checking/i }),
+    ).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /submit leave request/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /submit leave request/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -161,7 +171,11 @@ describe("EmployeeLeaveRequestPage - Form Step", () => {
     global.fetch = jest.fn().mockResolvedValueOnce({
       status: 200,
       ok: true,
-      json: async () => ({ id: "1", name: "John Doe", department: "Engineering" }),
+      json: async () => ({
+        id: "1",
+        name: "John Doe",
+        department: "Engineering",
+      }),
     });
 
     render(<EmployeeLeaveRequestPage />);
@@ -279,7 +293,9 @@ describe("EmployeeLeaveRequestPage - Form Step", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /continue/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /continue/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -305,7 +321,9 @@ describe("EmployeeLeaveRequestPage - Form Step", () => {
     await userEvent.click(continueButton);
 
     await waitFor(() => {
-      const submitButton = screen.getByRole("button", { name: /submit leave request/i });
+      const submitButton = screen.getByRole("button", {
+        name: /submit leave request/i,
+      });
       fireEvent.click(submitButton);
     });
 
@@ -346,13 +364,17 @@ describe("EmployeeLeaveRequestPage - Success Step", () => {
     await userEvent.click(continueButton);
 
     await waitFor(() => {
-      const submitButton = screen.getByRole("button", { name: /submit leave request/i });
+      const submitButton = screen.getByRole("button", {
+        name: /submit leave request/i,
+      });
       fireEvent.click(submitButton);
     });
 
     await waitFor(() => {
       expect(
-        screen.getByText(/your leave request was submitted successfully and is pending approval/i)
+        screen.getByText(
+          /your leave request was submitted successfully and is pending approval/i,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -379,7 +401,9 @@ describe("EmployeeLeaveRequestPage - Success Step", () => {
     await userEvent.click(continueButton);
 
     await waitFor(() => {
-      const submitButton = screen.getByRole("button", { name: /submit leave request/i });
+      const submitButton = screen.getByRole("button", {
+        name: /submit leave request/i,
+      });
       fireEvent.click(submitButton);
     });
 

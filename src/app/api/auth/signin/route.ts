@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyCredentials } from "@/lib/db/users";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     if (!email || !password) {
       return NextResponse.json(
         { ok: false, error: "Email and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -22,20 +22,19 @@ export async function POST(request: NextRequest) {
     if (!result.ok) {
       return NextResponse.json(
         { ok: false, error: result.error || "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     return NextResponse.json({
       ok: true,
       data: result.data,
-      message: "Sign in successful"
+      message: "Sign in successful",
     });
-
   } catch (error) {
     return NextResponse.json(
       { ok: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -34,7 +34,8 @@ export function GoalCard({ goal }: GoalCardProps) {
     }
   };
 
-  const isOverdue = new Date(goal.deadline) < new Date() && goal.status !== "completed";
+  const isOverdue =
+    new Date(goal.deadline) < new Date() && goal.status !== "completed";
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -43,7 +44,9 @@ export function GoalCard({ goal }: GoalCardProps) {
           <div className="flex items-start gap-2 flex-1">
             {getStatusIcon(goal.status)}
             <div className="space-y-1 flex-1">
-              <CardTitle className="text-base leading-tight">{goal.title}</CardTitle>
+              <CardTitle className="text-base leading-tight">
+                {goal.title}
+              </CardTitle>
               <p className="text-sm text-muted-foreground line-clamp-2">
                 {goal.description}
               </p>
@@ -60,7 +63,10 @@ export function GoalCard({ goal }: GoalCardProps) {
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
             <div
-              className={cn("h-full transition-all", getStatusColor(goal.status))}
+              className={cn(
+                "h-full transition-all",
+                getStatusColor(goal.status),
+              )}
               style={{ width: `${goal.progress}%` }}
             />
           </div>
@@ -72,10 +78,7 @@ export function GoalCard({ goal }: GoalCardProps) {
             <Calendar className="h-3.5 w-3.5" />
             <span>Due:</span>
           </div>
-          <span className={cn(
-            "font-medium",
-            isOverdue ? "text-red-600" : ""
-          )}>
+          <span className={cn("font-medium", isOverdue ? "text-red-600" : "")}>
             {new Date(goal.deadline).toLocaleDateString()}
             {isOverdue && " (Overdue)"}
           </span>

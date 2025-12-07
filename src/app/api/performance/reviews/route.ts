@@ -35,12 +35,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Log received data for debugging
     console.log("[API] Received review data:", JSON.stringify(body, null, 2));
-    
+
     // Validate required fields
-    if (!body.employeeId || !body.employeeName || !body.reviewerId || !body.reviewerName || !body.reviewDate) {
+    if (
+      !body.employeeId ||
+      !body.employeeName ||
+      !body.reviewerId ||
+      !body.reviewerName ||
+      !body.reviewDate
+    ) {
       console.error("[API] Missing required fields:", {
         hasEmployeeId: !!body.employeeId,
         hasEmployeeName: !!body.employeeName,
@@ -49,11 +55,15 @@ export async function POST(request: NextRequest) {
         hasReviewDate: !!body.reviewDate,
       });
       return NextResponse.json(
-        { ok: false, error: "Missing required fields: employeeId, employeeName, reviewerId, reviewerName, reviewDate" },
-        { status: 400 }
+        {
+          ok: false,
+          error:
+            "Missing required fields: employeeId, employeeName, reviewerId, reviewerName, reviewDate",
+        },
+        { status: 400 },
       );
     }
-    
+
     // Transform form data to match database schema
     const reviewInput = {
       employeeId: body.employeeId,
@@ -70,13 +80,16 @@ export async function POST(request: NextRequest) {
       goals: body.goals || [],
       comments: body.comments || undefined,
     };
-    
-    console.log("[API] Transformed data for DB:", JSON.stringify(reviewInput, null, 2));
-    
+
+    console.log(
+      "[API] Transformed data for DB:",
+      JSON.stringify(reviewInput, null, 2),
+    );
+
     const created = await createPerformanceReview(reviewInput);
-    
+
     console.log("[API] Successfully created review:", created.id);
-    
+
     return NextResponse.json({ ok: true, data: created }, { status: 201 });
   } catch (e) {
     const msg = (e as Error).message;

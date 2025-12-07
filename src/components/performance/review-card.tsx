@@ -1,4 +1,10 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReviewDialog } from "./review-dialog";
@@ -50,11 +56,13 @@ export function ReviewCard({ review, onUpdate }: ReviewCardProps) {
           {review.status === "completed" && (
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="font-semibold">{review.overallRating.toFixed(1)}/5.0</span>
+              <span className="font-semibold">
+                {review.overallRating.toFixed(1)}/5.0
+              </span>
             </div>
           )}
         </div>
-        
+
         <div className="text-xs text-muted-foreground">
           Review Date: {new Date(review.reviewDate).toLocaleDateString()}
         </div>
