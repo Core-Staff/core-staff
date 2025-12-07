@@ -28,9 +28,8 @@ export async function POST(request: NextRequest) {
     const created = await clockInEmployee(body);
     return NextResponse.json({ ok: true, data: created }, { status: 201 });
   } catch (e) {
-    return NextResponse.json(
-      { ok: false, error: (e as Error).message },
-      { status: 500 },
-    );
+    const msg = (e as Error).message;
+    const status = msg === "duplicate_day" ? 409 : 500;
+    return NextResponse.json({ ok: false, error: msg }, { status });
   }
 }

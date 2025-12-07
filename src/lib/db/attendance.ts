@@ -85,7 +85,25 @@ export async function listAttendanceLogs(filters?: {
 export async function clockInEmployee(input: {
   employeeId: string;
 }): Promise<AttendanceLog> {
-  const now = new Date().toISOString();
+  const nowDate = new Date();
+  const yyyy = nowDate.getUTCFullYear();
+  const mm = String(nowDate.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(nowDate.getUTCDate()).padStart(2, "0");
+  const startOfDay = new Date(
+    `${yyyy}-${mm}-${dd}T00:00:00.000Z`,
+  ).toISOString();
+  const endOfDay = new Date(`${yyyy}-${mm}-${dd}T23:59:59.999Z`).toISOString();
+  const { data: existing, error: existingErr } = await supabase
+    .from("attendance_logs")
+    .select("id")
+    .eq("employee_id", input.employeeId)
+    .gte("clock_in", startOfDay)
+    .lte("clock_in", endOfDay);
+  if (existingErr) throw new Error(existingErr.message);
+  if ((existing ?? []).length > 0) {
+    throw new Error("duplicate_day");
+  }
+  const now = nowDate.toISOString();
   const row: Omit<DbAttendanceLog, "id"> = {
     employee_id: input.employeeId,
     clock_in: now,

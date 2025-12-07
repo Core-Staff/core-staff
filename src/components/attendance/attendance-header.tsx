@@ -38,6 +38,12 @@ export function AttendanceHeader() {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [toast, setToast] = useState<string>("");
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 4000);
+  };
 
   useEffect(() => {
     setQuery(searchParams.get("q") ?? "");
@@ -129,7 +135,14 @@ export function AttendanceHeader() {
         }),
       });
       const json = await res.json();
-      if (!json.ok) throw new Error("clock_in_failed");
+      if (!json.ok) {
+        const msg =
+          res.status === 409
+            ? "Already clocked in today"
+            : "Failed to clock in";
+        showToast(msg);
+        return;
+      }
       setClockOpen(false);
       setSelectedEmployeeId("");
       router.refresh();
@@ -193,6 +206,11 @@ export function AttendanceHeader() {
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
+            {toast && (
+              <div className="fixed right-4 top-4 z-50 rounded-md bg-red-600 px-3 py-2 text-sm text-white shadow-md">
+                {toast}
+              </div>
+            )}
             <DialogHeader>
               <DialogTitle>Clock In</DialogTitle>
             </DialogHeader>
