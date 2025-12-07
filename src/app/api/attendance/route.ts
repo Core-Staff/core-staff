@@ -1,0 +1,35 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { clockInEmployee, listAttendanceLogs } from "@/lib/db/attendance";
+
+export async function GET(request: NextRequest) {
+  try {
+    const url = new URL(request.url);
+    const q = url.searchParams.get("q") ?? undefined;
+    const dept = url.searchParams.get("dept") ?? undefined;
+    const status = url.searchParams.get("status") as "open" | "closed" | null;
+    const data = await listAttendanceLogs({
+      q,
+      dept,
+      status: status ?? undefined,
+    });
+    return NextResponse.json({ ok: true, data });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: (e as Error).message },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const created = await clockInEmployee(body);
+    return NextResponse.json({ ok: true, data: created }, { status: 201 });
+  } catch (e) {
+    const msg = (e as Error).message;
+    const status = msg === "duplicate_day" ? 409 : 500;
+    return NextResponse.json({ ok: false, error: msg }, { status });
+  }
+}
