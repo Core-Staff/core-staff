@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, Download } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 interface AnalyticsHeaderProps {
   period: string;
@@ -41,10 +41,6 @@ export function AnalyticsHeader({
             <SelectItem value="365">Last year</SelectItem>
           </SelectContent>
         </Select>
-        <button className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          <Download className="h-4 w-4" />
-          Export
-        </button>
       </div>
     </div>
   );

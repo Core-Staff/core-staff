@@ -7,9 +7,8 @@ interface AttendanceTrendChartProps {
 }
 
 export function AttendanceTrendChart({ data }: AttendanceTrendChartProps) {
-  const maxValue = Math.max(
-    ...data.flatMap((d) => [d.present, d.absent, d.late]),
-  );
+  if (!data.length) return null;
+  const totalHeight = 160;
 
   return (
     <Card>
@@ -44,17 +43,19 @@ export function AttendanceTrendChart({ data }: AttendanceTrendChartProps) {
                 <div className="flex w-full flex-col items-center gap-1">
                   <div
                     className="w-full rounded-t bg-green-500"
-                    style={{ height: `${(item.present / maxValue) * 160}px` }}
+                    style={{
+                      height: `${(item.present / 100) * totalHeight}px`,
+                    }}
                     title={`Present: ${item.present}%`}
                   />
                   <div
                     className="w-full bg-red-500"
-                    style={{ height: `${(item.absent / maxValue) * 160}px` }}
+                    style={{ height: `${(item.absent / 100) * totalHeight}px` }}
                     title={`Absent: ${item.absent}%`}
                   />
                   <div
                     className="w-full rounded-b bg-yellow-500"
-                    style={{ height: `${(item.late / maxValue) * 160}px` }}
+                    style={{ height: `${(item.late / 100) * totalHeight}px` }}
                     title={`Late: ${item.late}%`}
                   />
                 </div>

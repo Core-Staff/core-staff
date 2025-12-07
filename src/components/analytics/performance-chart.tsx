@@ -7,6 +7,7 @@ interface PerformanceChartProps {
 }
 
 export function PerformanceChart({ data }: PerformanceChartProps) {
+  if (!data.length) return null;
   const getBarColor = (index: number) => {
     const colors = [
       "bg-green-500",

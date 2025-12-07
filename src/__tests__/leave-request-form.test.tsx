@@ -118,7 +118,7 @@ describe("EmployeeLeaveRequestPage - Email Step", () => {
                 status: 200,
                 ok: true,
                 json: async () => ({ id: "1", name: "John Doe" }),
-              }),
+              } as unknown as Response),
             100,
           ),
         ),
