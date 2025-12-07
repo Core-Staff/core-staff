@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, Clock, TrendingUp, BarChart3 } from "lucide-react";
+import { Building2, Users, Clock, TrendingUp, BarChart3, UserRoundX } from "lucide-react";
 
 const navItems = [
   {
@@ -26,6 +26,11 @@ const navItems = [
     href: "/reports",
     icon: BarChart3,
   },
+  {
+    title: "Leave Requests",
+    href: "/leaveRequests",
+    icon: UserRoundX,
+  },
 ];
 
 export function DashboardNav() {
@@ -39,7 +44,7 @@ export function DashboardNav() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <Building2 className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold">Core Staff</span>
+          <span className="text-xl font-bold">Effeciency</span>
         </Link>
 
         {/* Navigation */}

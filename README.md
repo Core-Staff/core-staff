@@ -1,8 +1,8 @@
-# 🏢 Core Staff
+# 🏢 Effeciency
 
 > A modern, comprehensive HR management platform built for the digital age
 
-Core Staff is a full-featured human resources management system designed to streamline HR operations, enhance employee experience, and empower organizations to manage their workforce effectively. Built with Next.js and modern web technologies, Core Staff provides an intuitive interface for handling all aspects of human resource management.
+Effeciency is a full-featured human resources management system designed to streamline HR operations, enhance employee experience, and empower organizations to manage their workforce effectively. Built with Next.js and modern web technologies, Effeciency provides an intuitive interface for handling all aspects of human resource management.
 
 ## ✨ Features
 
