@@ -1,6 +1,6 @@
 # Analytics Components
 
-A comprehensive set of modular analytics components built with shadcn/ui for the Core Staff HR management platform.
+A comprehensive set of modular analytics components built with shadcn/ui for the Effeciency HR management platform.
 
 ## Components Overview
 

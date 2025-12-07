@@ -5,7 +5,7 @@ export default function RegisterPage() {
   return (
     <AuthCard
       title="Create your account"
-      description="Get started with Core Staff and streamline your HR operations"
+      description="Get started with Effeciency and streamline your HR operations"
     >
       <RegisterForm />
     </AuthCard>
