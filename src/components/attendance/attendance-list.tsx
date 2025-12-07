@@ -27,6 +27,29 @@ interface AttendanceListProps {
   logs: AttendanceLog[];
 }
 
+export function validateEditAttendanceInput(input: {
+  clockInLocal: string;
+  clockOutLocal: string;
+}): Record<string, string> {
+  const next: Record<string, string> = {};
+  const inLocal = input.clockInLocal?.trim() ?? "";
+  const outLocal = input.clockOutLocal?.trim() ?? "";
+  if (!outLocal) return next;
+  const inDay = inLocal.split("T")[0];
+  const outDay = outLocal.split("T")[0];
+  if (inDay && outDay && inDay !== outDay) {
+    next.clockOut = "Clock out must be same day as clock in";
+    return next;
+  }
+  const inMs = inLocal ? new Date(inLocal).getTime() : NaN;
+  const outMs = outLocal ? new Date(outLocal).getTime() : NaN;
+  if (!Number.isNaN(inMs) && !Number.isNaN(outMs) && outMs <= inMs) {
+    next.clockOut = "Clock out must be after clock in";
+    return next;
+  }
+  return next;
+}
+
 export function AttendanceList({ logs }: AttendanceListProps) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
@@ -85,24 +108,16 @@ export function AttendanceList({ logs }: AttendanceListProps) {
     setSaving(true);
     setEditError("");
     try {
+      const errs = validateEditAttendanceInput({
+        clockInLocal: clockInEdit,
+        clockOutLocal: clockOutEdit,
+      });
+      if (Object.keys(errs).length > 0) {
+        setEditError(errs.clockOut ?? "Invalid values");
+        return;
+      }
       const inIso = fromLocalInputValue(clockInEdit);
       const outIso = fromLocalInputValue(clockOutEdit);
-      if (clockOutEdit.trim() !== "") {
-        const inDay = clockInEdit.split("T")[0];
-        const outDay = clockOutEdit.split("T")[0];
-        if (inDay !== outDay) {
-          setEditError("Clock out must be same day as clock in");
-          return;
-        }
-        if (inIso && outIso) {
-          const inMs = new Date(clockInEdit).getTime();
-          const outMs = new Date(clockOutEdit).getTime();
-          if (outMs <= inMs) {
-            setEditError("Clock out must be after clock in");
-            return;
-          }
-        }
-      }
       const body: Record<string, string | null> = {};
       if (inIso) body.clockIn = inIso;
       if (clockOutEdit.trim() !== "") body.clockOut = outIso ?? null;
