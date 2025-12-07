@@ -65,6 +65,15 @@ export function HeroSection() {
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
+            <Link href="/leave-request">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto gap-2 border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all group"
+              >
+                → Submit Leave Request
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -98,9 +107,6 @@ export function HeroSection() {
                 View Analytics Dashboard
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </Link>
-            <Link href="/leave-request" className="text-xs text-muted-foreground hover:text-primary transition-colors font-medium uppercase tracking-wider hover:underline">
-              → Submit Leave Request
             </Link>
           </div>
         </div>
