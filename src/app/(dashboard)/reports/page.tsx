@@ -1,3 +1,6 @@
+"use client";
+
+import * as React from "react";
 import { AnalyticsHeader } from "@/components/analytics/analytics-header";
 import { MetricCard } from "@/components/analytics/metric-card";
 import { DepartmentTable } from "@/components/analytics/department-table";
@@ -7,7 +10,6 @@ import { TopPerformersList } from "@/components/analytics/top-performers-list";
 import { LeaveRequestsTable } from "@/components/analytics/leave-requests-table";
 import { RecentActivities } from "@/components/analytics/recent-activities";
 import {
-  metricsData,
   departmentData,
   attendanceTrends,
   performanceDistribution,
@@ -15,15 +17,40 @@ import {
   recentLeaveRequests,
   recentActivities,
 } from "@/lib/data/analytics-data";
+import type { MetricCard as MetricCardData } from "@/types/analytics";
 
 export default function AnalyticsPage() {
+  const [period, setPeriod] = React.useState<string>("30");
+  const [metrics, setMetrics] = React.useState<MetricCardData[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const fetchMetrics = React.useCallback(async (p: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/analytics/kpis?period=${encodeURIComponent(p)}`,
+        { cache: "no-store" },
+      );
+      const json = await res.json();
+      if (json?.ok && Array.isArray(json.data)) {
+        setMetrics(json.data as MetricCardData[]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchMetrics(period);
+  }, [period, fetchMetrics]);
+
   return (
     <div className="flex min-h-screen flex-col gap-8 p-8">
-      <AnalyticsHeader />
+      <AnalyticsHeader period={period} onPeriodChange={setPeriod} />
 
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {metricsData.map((metric) => (
+        {(loading ? [] : metrics).map((metric) => (
           <MetricCard key={metric.title} {...metric} />
         ))}
       </div>

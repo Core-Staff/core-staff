@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Select,
   SelectContent,
@@ -7,7 +9,15 @@ import {
 } from "@/components/ui/select";
 import { Calendar, Download } from "lucide-react";
 
-export function AnalyticsHeader() {
+interface AnalyticsHeaderProps {
+  period: string;
+  onPeriodChange: (value: string) => void;
+}
+
+export function AnalyticsHeader({
+  period,
+  onPeriodChange,
+}: AnalyticsHeaderProps) {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
@@ -19,7 +29,7 @@ export function AnalyticsHeader() {
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Select defaultValue="30">
+        <Select value={period} onValueChange={onPeriodChange}>
           <SelectTrigger className="w-[180px]">
             <Calendar className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Select period" />

@@ -55,7 +55,7 @@ export function MetricCard({
           <span className={isPositive ? "text-green-500" : "text-red-500"}>
             {change}%
           </span>
-          <span className="ml-1">from last month</span>
+          <span className="ml-1">from previous period</span>
         </div>
       </CardContent>
     </Card>
